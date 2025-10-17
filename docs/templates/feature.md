@@ -1,141 +1,122 @@
 ---
-title: "[Feature] Short descriptive title"
-labels: enhancement, feature
-assignees: 
-milestone: 
+type: feature
+status: todo
 priority: medium
-status: open
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+estimated_hours: X
 ---
 
-# [Feature] Feature Name
+# Feature: [Feature Name]
 
-## 📋 Summary
+## Context
 
-[Brief description of what this feature does and why it's needed]
+**Why do we need this feature?**
+[Explain the problem or opportunity]
 
----
+**Current Situation:**
+[What exists now]
 
-## 🎯 Problem Statement
+**Desired State:**
+[What we want]
 
-### Current Situation
-[Describe what currently exists or what the problem is]
+## User Story
 
-### User Impact
-- **Who is affected:** [e.g., All users, Admin users, Mobile users]
-- **How often:** [e.g., Daily, Weekly, Every login]
-- **Severity:** [e.g., Blocker, Major inconvenience, Nice to have]
+As a [user type]
+I want [capability]
+So that [benefit]
 
-### Business Value
-[Explain why this feature is important for the business/product]
+**Example Scenario:**
 
----
-
-## 💡 Proposed Solution
-
-### Overview
-[High-level description of the proposed solution]
-
-### User Story
-
-**As a** [type of user]  
-**I want** [capability/feature]  
-**So that** [benefit/value]
-
-**Acceptance Scenario:**
-```gherkin
+```
 Given [precondition]
 When [user action]
 Then [expected outcome]
 ```
 
----
-
-## 🔧 Technical Design
-
-### Architecture
-```
-[ASCII diagram or description]
-```
-
-### Key Components
-
-| Component | Responsibility | Technology |
-|-----------|---------------|------------|
-| [Component 1] | [What it does] | [Tech stack] |
-
-### API Changes
-
-<details>
-<summary>New Endpoints</summary>
-
-**Endpoint:** `POST /api/v1/resource`
-
-**Request:**
-```json
-{
-  "field1": "value1"
-}
-```
-
-**Response:**
-```json
-{
-  "id": "123",
-  "status": "success"
-}
-```
-
-</details>
-
----
-
-## ✅ Acceptance Criteria
+## Requirements
 
 ### Functional Requirements
-- [ ] **FR-1:** [Specific, testable requirement]
-- [ ] **FR-2:** [Specific, testable requirement]
+
+- [ ] REQ-1: [Specific requirement]
+- [ ] REQ-2: [Specific requirement]
+- [ ] REQ-3: [Specific requirement]
 
 ### Non-Functional Requirements
-- [ ] **Performance:** [Measurable metric]
-- [ ] **Security:** [Security requirement]
-- [ ] **Accessibility:** [A11y requirement]
 
----
+- [ ] Performance: [e.g., Response time < 200ms]
+- [ ] Security: [e.g., Requires authentication]
+- [ ] Scalability: [e.g., Support 1000 concurrent users]
 
-## 🧪 Testing Strategy
+## Technical Approach
 
-### Unit Tests
-- [ ] Test [component A]
-- [ ] Test [component B]
+**Architecture:**
 
-### Integration Tests
-- [ ] Test [integration point]
+```
+[Describe or diagram the architecture]
+```
 
----
+**Key Components:**
 
-## 📝 Implementation Plan
+1. Component A: [Purpose]
+2. Component B: [Purpose]
+3. Component C: [Purpose]
 
-### Phase 1: Foundation (Estimated: X hours)
+**Technology Stack:**
 
-- [ ] **Task 1.1:** [Description]
-  - Files: `path/to/file.ts`
-  - Estimated: X hours
+- Frontend: [technologies]
+- Backend: [technologies]
+- Database: [technologies]
+- External Services: [APIs, libraries]
 
----
+## Implementation Plan
 
-## 🏁 Definition of Done
+### Phase 1: [Phase Name]
 
-- [ ] All acceptance criteria met
-- [ ] Tests passing
-- [ ] Code reviewed
+1. Step 1: [Description]
+
+   - Files: [list files to create/modify]
+   - Estimated: [time]
+
+2. Step 2: [Description]
+   - Files: [list files]
+   - Estimated: [time]
+
+### Phase 2: [Phase Name]
+
+...
+
+## Testing Strategy
+
+**Unit Tests:**
+
+- Test case 1
+- Test case 2
+
+**Integration Tests:**
+
+- Test scenario 1
+- Test scenario 2
+
+**E2E Tests:**
+
+- User flow 1
+- User flow 2
+
+## Success Criteria
+
+- [ ] All functional requirements met
+- [ ] All tests passing
+- [ ] Code reviewed and approved
 - [ ] Documentation updated
-- [ ] Deployed
+- [ ] Performance benchmarks met
 
----
+## References
 
-## 📚 References & Resources
+- [Link to design doc]
+- [Link to API spec]
+- [Link to similar implementation]
 
-- [Link to documentation]
-- [Link to design]
+## Notes
+
+[Any additional notes, constraints, or considerations]

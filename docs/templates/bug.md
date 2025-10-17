@@ -1,66 +1,93 @@
 ---
-title: "[Bug] Short bug description"
-labels: bug
+type: bug
+status: todo
 priority: high
-status: open
-severity: high
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
+severity: critical|high|medium|low
 ---
 
-# [Bug] Bug Description
+# Bug: [Short Bug Description]
 
-## 📋 Summary
-[One sentence description]
+## Summary
 
-## 🌍 Environment
-- OS: [Windows/macOS/Linux]
+[One sentence description of the bug]
+
+## Environment
+
+- OS: [Windows/macOS/Linux + version]
 - Browser: [if applicable]
-- Version: [version]
+- App Version: [version]
+- Environment: [dev/staging/production]
 
-## ❌ Expected Behavior
+## Expected Behavior
+
 [What should happen]
 
-## ⚠️ Actual Behavior
+## Actual Behavior
+
 [What actually happens]
 
-## 🔄 Steps to Reproduce
+## Steps to Reproduce
+
 1. [Step 1]
 2. [Step 2]
-3. **Result:** [Bug occurs]
+3. [Step 3]
+4. **Result:** [Bug occurs]
 
 **Reproducibility:** Always | Sometimes (X%) | Rare
 
-## 📊 Error Logs
+## Error Logs
+
 ```
-[Paste error logs]
+[Paste error logs, stack trace, or error messages]
 ```
 
-## 🔍 Root Cause Analysis
+## Screenshots/Videos
+
+[Attach or link to screenshots/videos]
+
+## Root Cause Analysis
+
+[Leave empty initially, fill after investigation]
 
 **Suspected Cause:**
-[Hypothesis]
+[Initial hypothesis]
 
 **Actual Cause:**
 [Fill after debugging]
 
-## 💡 Solution Approach
-[How to fix]
+## Solution Approach
+
+[How to fix this]
 
 **Files to Modify:**
-- `path/to/file.js` - [Changes]
 
-## 🧪 Testing Plan
+- `path/to/file1.js` - [What to change]
+- `path/to/file2.ts` - [What to change]
+
+## Testing Plan
 
 **Verification Steps:**
-1. [Verify fix]
-2. [Test scenario]
+
+1. [How to verify fix]
+2. [Test scenario 1]
+3. [Test scenario 2]
 
 **Regression Testing:**
-- [ ] Related feature 1 works
-- [ ] Related feature 2 works
 
-## ✅ Success Criteria
-- [ ] Bug not reproducible
-- [ ] Tests prevent regression
-- [ ] Related functionality works
+- [ ] Related feature 1 still works
+- [ ] Related feature 2 still works
+
+## Success Criteria
+
+- [ ] Bug no longer reproducible
+- [ ] Tests added to prevent regression
+- [ ] Related functionality not broken
+- [ ] Code reviewed
+
+## References
+
+- Related issue: [link]
+- Similar bug: [link]
+- Documentation: [link]
