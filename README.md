@@ -45,7 +45,7 @@ Step 4: Review & Done
 ```
 
 project/
-├── .prompts/ # ⭐ Prompt Library
+├── prompts/ # ⭐ Prompt Library
 │ ├── README.md # How to use prompts
 │ │
 │ ├── 1-planning/ # Planning phase prompts
@@ -71,9 +71,9 @@ project/
 │ │ └── debug-issue.md
 │ │
 │ └── 5-documentation/ # Documentation prompts
-│ ├── update-docs.md
-│ ├── generate-summary.md
-│ └── write-readme.md
+│ │ ├── update-docs.md
+│ │ ├── generate-summary.md
+│ │ └── write-readme.md
 ├── docs/
 │ ├── project-overview.md
 │ ├── architecture.md
