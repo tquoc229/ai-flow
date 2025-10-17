@@ -32,7 +32,7 @@ estimated_time: varies per task
 Implement this task following project standards:
 
 ## Task Details
-[Paste task ticket content or provide path: docs/delivery/tickets/tasks/task-X-Y.md]
+[Paste task ticket content or provide path: docs/delivery/[pbinumber]/task-X-Y.md]
 
 ## Project Context
 Read these files for context:

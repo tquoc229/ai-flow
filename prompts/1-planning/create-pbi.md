@@ -65,7 +65,7 @@ Format as a complete PBI ticket in markdown with:
 - Clear acceptance criteria
 - Implementation considerations
 
-Save as: docs/delivery/tickets/pbi/pbi-X.md
+Save as: docs/delivery/[pbinumber]/pbi-X.md
 ```
 
 ## Expected Output
@@ -79,7 +79,7 @@ Save as: docs/delivery/tickets/pbi/pbi-X.md
 
 1. Review the generated PBI
 2. Edit/refine if needed
-3. Save to docs/delivery/tickets/pbi/
+3. Save to docs/delivery/[pbinumber]/
 4. Update backlog.md with new PBI
 5. Use breakdown-tasks.md prompt for next step
 
