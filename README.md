@@ -45,7 +45,44 @@ Step 4: Review & Done
 ```
 
 project/
+├── .prompts/ # ⭐ Prompt Library
+│ ├── README.md # How to use prompts
+│ │
+│ ├── 1-planning/ # Planning phase prompts
+│ │ ├── brainstorm-feature.md
+│ │ ├── create-pbi.md
+│ │ ├── breakdown-tasks.md
+│ │ └── research-topic.md
+│ │
+│ ├── 2-design/ # Design phase prompts
+│ │ ├── ui-design.md
+│ │ ├── database-schema.md
+│ │ └── api-design.md
+│ │
+│ ├── 3-implementation/ # Implementation prompts
+│ │ ├── implement-feature.md
+│ │ ├── fix-bug.md
+│ │ ├── refactor-code.md
+│ │ └── optimize-performance.md
+│ │
+│ ├── 4-testing/ # Testing prompts
+│ │ ├── write-tests.md
+│ │ ├── review-code.md
+│ │ └── debug-issue.md
+│ │
+│ └── 5-documentation/ # Documentation prompts
+│ ├── update-docs.md
+│ ├── generate-summary.md
+│ └── write-readme.md
 ├── docs/
+│ ├── project-overview.md
+│ ├── architecture.md
+│ ├── api-docs.md
+│ ├── delivery/ # Delivery tracking
+│ │ ├── backlog.md # Product backlog
+│ │ ├── pbi-number/
+│ │ ├── ├── prd.md # Detail PBI-number
+│ │ └── └── tasks.md # All tasks of this PBI-number
 │ ├── templates/ # ⭐ Copy từ đây
 │ │ ├── README.md # Hướng dẫn sử dụng templates
 │ │ ├── feature.md # Template cho feature mới
@@ -71,9 +108,15 @@ project/
 │ ├── architecture.md # Architecture docs
 │ └── code-standards.md # Code standards
 │
-├── .agents/ # Agent definitions (optional)
-│ ├── README.md
-│ └── [agent files]
+├── agents/ # ⭐ Agent Definitions
+│ ├── README.md # How agents work
+│ ├── brainstormer.md
+│ ├── planner.md
+│ ├── researcher.md
+│ ├── ui-ux-designer.md
+│ ├── debugger.md
+│ ├── tester.md
+│ └── code-reviewer.md
 │
 └── src/ # Source code
 
