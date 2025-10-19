@@ -151,6 +151,17 @@ For any PBI creating/modifying APIs or interfaces, create documentation includin
 
 **Location:** `docs/technical/` or inline code documentation
 
+#### 🔁 Principle of Hierarchical Planning (PBI vs. Task)
+To maintain DRY, planning information must be hierarchical:
+
+- PBI Detail Document (prd.md): The Implementation Plan and Testing Strategy sections define the high-level, multi-task strategy (e.g., phases, milestones, testing approach).
+- Task Detail Document (<ID>-<TaskNum>.md): The Implementation Plan and Test Plan sections define the detailed, step-by-step, executable actions required to complete one part of the PBI's high-level plan.
+- The AI_Agent is responsible for decomposing the high-level PBI plan into detailed, actionable Tasks.
+
+#### ♻️ Legacy Code Prioritization
+- ✅ When analyzing a PBI or Task, the **AI_Agent** must *always* prioritize searching for and **leveraging** existing functions, APIs, components, and patterns within the codebase.
+- ❌ **PROHIBITED:** Writing new code for functionality that already exists.
+- ✅ All implementation plans (`Implementation Plan` / `Implementation Steps`) must explicitly state which legacy assets will be reused.
 ---
 
 ### 2.2 AI Agent Automation Rules
@@ -253,33 +264,34 @@ AI_Agent MUST log:
     └─ Creation in PBI history
 ```
 
-**2. PBI Approval:**
+**2. PBI Plan Generation (User approves idea):**
 ```
-PBI status: Proposed → Agreed
+PBI status: Proposed → Agreed (User trigger)
     ↓
 AI_Agent MUST:
-    ├─ Create PBI detail document: <PBI-ID>/prd.md
-    ├─ Create task list: <PBI-ID>/tasks.md
-    ├─ Populate required sections
+    ├─ **(NEW) Scan codebase for reusable assets (Discovery)**
+    ├─ Create PBI detail document: <PBI-ID>/prd.md (using Template 2)
+    ├─ Populate all sections (high-level plan) **using Discovery findings**
     ├─ Link backlog ↔ detail document
-    └─ Log approval in history
+    ├─ Update PBI status → PlanInReview
+    └─ Log action in history
 ```
 
-**3. PBI Implementation:**
+**3. PBIPBI Task Decomposition (User approves plan):**
 ```
-PBI status: Agreed → InProgress
-    ↓
-AI_Agent MUST verify:
-    ├─ No other InProgress PBIs for same component
-    └─ Tasks are defined
+PBI status: PlanInReview → ReadyForTasks (User trigger)
     ↓
 AI_Agent MUST:
-    ├─ Update PBI status in backlog
-    ├─ Log start in history
+    ├─ Read approved prd.md
+    ├─ Create task list: <PBI-ID>/tasks.md
+    ├─ Decompose plan into all task files (<ID>-<TaskNum>.md)
+    ├─ Set all new tasks to Proposed
+    ├─ Update PBI status → InProgress
+    └─ Log action in history
     └─ Begin task execution flow
 ```
 
-**4. PBI Review:**
+**4. PBI Review (AI finishes all tasks):**
 ```
 PBI status: InProgress → InReview
     ↓
@@ -453,12 +465,9 @@ User Request → Identify Task → Verify Scope → Execute OR Create New Task
 
 | State | Description | What It Means |
 |-------|-------------|---------------|
-| `Proposed` | Initial state | PBI suggested but not yet approved |
-| `Agreed` | Approved | Ready for implementation, tasks can be created |
-| `InProgress` | Active work | Implementation underway, tasks being executed |
-| `InReview` | Awaiting validation | Implementation complete, pending User review |
-| `Done` | Completed | Accepted and merged, no further work needed |
-| `Rejected` | Not accepted | Requires rework or has been deprioritized |
+| `PlanInReview` | Awaiting plan approval | AI_Agent đã phân tích và tạo file prd.md chi tiết. Chờ User duyệt kế hoạch này. |
+| `ReadyForTasks` | Plan approved | User đã duyệt file prd.md. AI_Agent được phép phân rã kế hoạch này thành Tasks. |
+| `NeedsPlanRework` | Plan rejected | User từ chối kế hoạch trong prd.md, yêu cầu AI làm lại. |
 
 ---
 
@@ -507,61 +516,68 @@ User Request → Identify Task → Verify Scope → Execute OR Create New Task
 
 ---
 
-#### Transition 2: Approving PBI for Backlog
+#### Transition 2: User Approves PBI Idea / AI Generates Plan
 
-**When:** User reviews proposed PBI and approves it for implementation
+**When:** User approves the 1-line PBI idea in `backlog.md`
 
-**State Change:** `Proposed` → `Agreed`
+**State Change:** `Proposed` → `PlanInReview`
 
-**Who Can Do This:** User only
+**Who Can Do This:** User (triggers), AI_Agent (executes)
 
-**Before Approving:**
-- ✅ PBI aligns with PRD (if PRD exists)
-- ✅ User story is clear and complete
-- ✅ Conditions of Satisfaction are specific and measurable
-- ✅ No duplicate PBIs exist
+**Before (User):**
+* User sets 1-line PBI status from `Proposed` to `Agreed` in `backlog.md`. (This `Agreed` status is a temporary trigger).
 
 **AI_Agent MUST Do:**
-1. ✅ Create directory: `docs/delivery/<PBI-ID>/`
-2. ✅ Create PBI detail document: `docs/delivery/<PBI-ID>/prd.md` with all required sections
-3. ✅ Create task list file: `docs/delivery/<PBI-ID>/tasks.md`
-4. ✅ Set up bidirectional links:
-   - From backlog to detail document
-   - From detail document back to backlog
-5. ✅ Update PBI status to `Agreed` in backlog
-6. ✅ Log in PBI history:
-   - Action: "Approved for Backlog"
-   - Details: Why approved, any PRD alignment notes
-   - User: User name who approved
+1.  ✅ **Detect** PBI status changed to `Agreed`.
+2.  ✅ **(NEW) Perform Targeted Legacy Discovery:**
+    * **a. Generate Keywords:** Based on the PBI `User Story`, generate a list of relevant search keywords (e.g., "profile", "user", "functionName").
+    * **b. Execute Search:** Use code search tools (e.g., `ripgrep`, vector search) to find a *small set* of the **MOST RELEVANT** files or code chunks.
+    * **c. Read Context:** Read **ONLY** that small, relevant set of files. **DO NOT read the entire codebase.** This is critical to conserve tokens and prevent overload.
+3.  ✅ **Create directory:** `docs/delivery/<PBI-ID>/`
+4.  ✅ **Create PBI detail document:** `docs/delivery/<PBI-ID>/prd.md` using Template 2 (Section 3.6).
+5.  ✅ **Perform Analysis & Populate:** Auto-fill all sections in the `prd.md` file.
+    * **CRITICAL:** The `Legacy Discovery Findings` section **MUST** be populated based on the results from the *targeted* discovery (Step 2c).
+    * The high-level `Implementation Plan` must prioritize *modifying* legacy code over *creating* new code, based on these findings.
+6.  ✅ **Set up bidirectional links:**
+    * In `backlog.md`: Update the 1-line PBI to link to the new `prd.md` file.
+    * In `prd.md`: Add a link back to `backlog.md`.
+7.  ✅ **Update PBI status to `PlanInReview`** in `backlog.md`.
+8.  ✅ **Log in PBI history:**
+    * Action: "Generated Plan for Review"
+    * Details: "AI performed *Targeted Discovery* and generated detailed PBI plan, awaiting User approval"
+    * User: ai-agent
 
-**Next Step:** Define tasks needed to implement this PBI
+**Next Step:** Wait for User to review the detailed plan in `prd.md`.
 
 ---
 
-#### Transition 3: Starting PBI Implementation
+#### Transition 3: User Approves Plan / AI Decomposes Tasks
 
-**When:** Ready to begin work on PBI, tasks are defined
+**When**: User reviews and approves the detailed plan in prd.md.
 
-**State Change:** `Agreed` → `InProgress`
+**State Change**: `PlanInReview` → `InProgress`
 
-**Who Can Do This:** User or AI_Agent
+**Who Can Do This**: User (triggers), AI_Agent (executes)
 
-**Before Starting:**
-- ✅ No other PBIs are `InProgress` for the same component
-- ✅ Tasks are defined and listed in task list
-- ✅ All dependencies are available
+**Before (User)**:
+- User reviews `prd.md`, thực hiện mọi chỉnh sửa cần thiết.
+- User sets PBI status from `PlanInReview` to `ReadyForTasks` in `backlog.md`. (This `ReadyForTasks` is a temporary trigger).
 
-**AI_Agent MUST Do:**
-1. ✅ Verify no conflicting InProgress PBIs exist
-2. ✅ Confirm task list has at least one task
-3. ✅ Update PBI status to `InProgress` in backlog
-4. ✅ Log in PBI history:
-   - Action: "Started Implementation"
-   - Details: Number of tasks created, which task starting first
-   - User: Who initiated (usually ai-agent)
-5. ✅ Begin working on first task (see Section 4.4)
+**AI_Agent MUST Do**:
 
-**Next Step:** Work through tasks one by one until all are Done
+1. ✅ **Detect** PBI status changed to `ReadyForTasks`.
+2. ✅ **Read** file `prd.md` đã được User phê duyệt.
+3. ✅ **Create task list file**: `docs/delivery/<PBI-ID>/tasks.md` (theo cấu trúc Mục 4.10).
+4. ✅ **Decompose Plan**: Đọc `Implementation Plan` cấp cao (từ `prd.md`) và phân rã nó thành các Task chi tiết.
+5. ✅ **Create ALL Task Files**: Tạo tất cả các file task chi tiết (ví dụ: `<PBI-ID>-1.md`, `<PBI-ID>-2.md`...) theo (Mục 4.2).
+6. ✅ **Set all new tasks to** `Proposed` (sẵn sàng cho User duyệt từng task).
+7. ✅ **Update PBI status to** `InProgress` trong `backlog.md` (báo hiệu PBI đã chính thức bắt đầu được triển khai).
+8. ✅ **Log in PBI history**:
+ - Action: "Plan Approved, Tasks Decomposed"
+ - Details: "User approved plan. AI decomposed into [X] tasks."
+ - User: ai-agent
+
+Next Step: Workflow Task Management (Mục 4) bắt đầu. User duyệt (approve) Task đầu tiên (`Proposed` -> `Agreed`) để AI bắt đầu code.
 
 ---
 
@@ -626,7 +642,7 @@ User Request → Identify Task → Verify Scope → Execute OR Create New Task
 
 **When:** User reviews PBI and finds issues that need to be fixed
 
-**State Change:** `InReview` → `Rejected`
+**State Change:** `InReview` → `Rejected`, `PlanInReview` → `NeedsPlanRework`
 
 **Who Can Do This:** User only
 
@@ -678,7 +694,7 @@ User Request → Identify Task → Verify Scope → Execute OR Create New Task
 
 **When:** PBI needs to be postponed or moved down in priority
 
-**State Change:** `Agreed` or `InProgress` → `Proposed`
+**State Change:** `ReadyForTasks` or `InProgress` → `Proposed`
 
 **Who Can Do This:** User only
 
@@ -771,42 +787,151 @@ Use **plain language** that describes what you did:
 **Location:** `docs/delivery/<PBI-ID>/prd.md`
 
 **Purpose:** 
-- Serves as mini-PRD for the PBI
-- Documents problem space and solution approach
-- Provides technical and UX details
-- Maintains single source of truth for PBI information
+- Serves as the primary source of truth for all PBI context, requirements, and high-level planning.
+- Documents the problem space, desired state, and strategic approach.
+- Provides the high-level plan for the AI_Agent to decompose into granular tasks.
 
 **Required Sections:**
 
 ```markdown
-# PBI-<ID>: <Title>
+---
+type: feature
+status: todo
+priority: medium
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+estimated_hours: X
+---
 
-## Overview
-[High-level summary of what this PBI delivers]
+# Feature: [Feature Name]
 
-## Problem Statement
-[What problem are we solving? Why is it important?]
+## Context
 
-## User Stories
-[Detailed user stories and scenarios]
+**Why do we need this feature?**
+[Explain the problem or opportunity]
+
+**Current Situation:**
+[What exists now]
+
+**Desired State:**
+[What we want]
+
+## User Story
+
+As a [user type]
+I want [capability]
+So that [benefit]
+
+**Example Scenario:**
+
+```
+Given [precondition]
+When [user action]
+Then [expected outcome]
+```
+
+## Requirements
+
+### Functional Requirements
+
+- [ ] REQ-1: [Specific requirement]
+- [ ] REQ-2: [Specific requirement]
+- [ ] REQ-3: [Specific requirement]
+
+### Non-Functional Requirements
+
+- [ ] Performance: [e.g., Response time < 200ms]
+- [ ] Security: [e.g., Requires authentication]
+- [ ] Scalability: [e.g., Support 1000 concurrent users]
 
 ## Technical Approach
-[How we will implement this technically]
 
-## UX/UI Considerations
-[User experience and interface design notes]
+**Architecture:**
 
-## Acceptance Criteria
-[Specific, measurable criteria for completion - same as CoS in backlog]
+```
+[Describe or diagram the architecture]
+```
+--- 
 
-## Dependencies
-[Other PBIs, external services, or systems this depends on]
+---
+### **Legacy Discovery Findings**
+[**AI_Agent MUST FILL THIS SECTION.** Report on existing files, functions, APIs, or components relevant to this PBI, adhering to the `Legacy Code Prioritization` principle.]
 
-## Open Questions
-[Unresolved questions that need answers]
+- **File:** `path/to/relevant/file.ts`
+    - **Function/API:** `functionName()`
+    - **Notes:** [Will be reused/extended for...]
+- **Component:** `path/to/component.vue`
+    - **Notes:** [Will be reused...]
 
-## Related Tasks
-[Links to task list and individual tasks]
+---
+
+**Key Components (To build/modify):**
+[List new components to build OR existing components to modify, based on "Discovery Findings" above.]
+
+1. Component A: [Purpose]
+2. Component B: [Purpose]
+3. Component C: [Purpose]
+
+**Technology Stack:**
+
+- Frontend: [technologies]
+- Backend: [technologies]
+- Database: [technologies]
+- External Services: [APIs, libraries]
+
+## Implementation Plan
+
+### Phase 1: [Phase Name]
+
+1. Step 1: [Description]
+
+   - Files: [list files to create/modify]
+   - Estimated: [time]
+
+2. Step 2: [Description]
+   - Files: [list files]
+   - Estimated: [time]
+
+### Phase 2: [Phase Name]
+
+...
+
+## Testing Strategy
+
+**Unit Tests:**
+
+- Test case 1
+- Test case 2
+
+**Integration Tests:**
+
+- Test scenario 1
+- Test scenario 2
+
+**E2E Tests:**
+
+- User flow 1
+- User flow 2
+
+## Success Criteria
+
+- [ ] All functional requirements met
+- [ ] All tests passing
+- [ ] Code reviewed and approved
+- [ ] Documentation updated
+- [ ] Performance benchmarks met
+
+## References
+
+- [Link to design doc]
+- [Link to API spec]
+- [Link to similar implementation]
+
+## Notes
+
+[Any additional notes, constraints, or considerations]
+
+
 ```
 
 **Document Linking:**
@@ -857,28 +982,54 @@ Use **plain language** that describes what you did:
 **Required Sections in Task Files:**
 
 ```markdown
-# [Task-ID] [Task-Name]
+---
+type: task
+priority: medium
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+estimated_hours: X
+---
+# Task: [Task-ID] [Task-Name]
+[Back to task list](tasks.md)
 
-## Description
-[Clear description of what needs to be accomplished]
+## Goal
+[What this task achieves]
+
+## Context
+[Why we're doing this]
 
 ## Status History
-[Table with all status changes - see Section 4.6]
+| Timestamp | Action | From Status | To Status | Details | User |
+|-----------|---------|---------|---------|---------|---------|
+| ... | ... | ... | ... | ... | ... |
 
 ## Requirements
-[Specific requirements and acceptance criteria]
+- [ ] Requirement 1
+- [ ] Requirement 2
 
-## Implementation Plan
-[Step-by-step approach to implementation]
+## Implementation Steps
+1. Step 1: [Description]
+ - ...
+2. Step 2: [Description]
+ - ...
 
-## Test Plan
-[Testing approach - proportional to complexity]
+## Files to Modify/Create
+- [ ] path/to/file1.js - [What to do]
+- [ ] path/to/new-file.ts - [Create new]
 
-## Verification
-[How to verify the implementation works]
+## Testing
+**Test Cases**:
+- [ ] Test case 1
+- [ ] Test case 2
 
-## Files Modified
-[List of all files changed by this task]
+## Success Criteria
+- [ ] Implementation complete
+- [ ] Tests passing
+- [ ] Code follows standards
+
+## References
+[Links to relevant docs]
+
 ```
 
 **Core Principles:**
@@ -953,8 +1104,8 @@ Use **plain language** that describes what you did:
 1. ✅ Create task documentation file named: `<PBI-ID>-<TASK-ID>.md`
 2. ✅ Add task entry to task index with link: `[description](mdc:<PBI-ID>-<TASK-ID>.md)`
 3. ✅ Populate all required sections in task file (Description, Requirements, etc.)
-4. ✅ Complete analysis and design work - document in Implementation Plan section
-5. ✅ Define test plan appropriate to task complexity
+4. ✅ Complete analysis and design work - document in Implementation Steps section
+5. ✅ Define test cases in Testing section appropriate to task complexity
 6. ✅ Update task status to `Agreed` in **BOTH** task file and index
 7. ✅ Add entries to task history:
    - First entry - Event_Type: "Created", From: N/A, To: Proposed
@@ -977,7 +1128,7 @@ Use **plain language** that describes what you did:
 - ✅ No other tasks have status `InProgress` for this same PBI
 - ✅ Task status is `Agreed` in both task file AND index
 - ✅ All dependencies are available
-- ✅ Implementation plan is clear
+- ✅ Implementation Steps are clear
 
 **AI_Agent MUST Do:**
 1. ✅ Check that no other tasks for this PBI are `InProgress`
@@ -1008,9 +1159,9 @@ Use **plain language** that describes what you did:
 
 **Before Submitting:**
 - ✅ All requirements from Requirements section are implemented
-- ✅ All tests from Test Plan are written and passing
+- ✅ All Test Cases from Testing section are implemented and passing
 - ✅ Code follows project standards and conventions
-- ✅ All modified files are documented in "Files Modified" section
+- ✅ All modified files are documented in "Files to Modify/Create" section
 
 **AI_Agent MUST Do:**
 1. ✅ Run all relevant tests and verify they pass
@@ -1109,8 +1260,8 @@ Use **plain language** that describes what you did:
 **AI_Agent MUST Do:**
 1. ✅ Document the nature of significant changes to:
    - Requirements section (if requirements changed)
-   - Implementation Plan (if approach changed)
-   - Test Plan (if testing needs changed)
+   - Implementation Steps (if approach changed)
+   - Testing (if test cases changed)
 2. ✅ Update task status to `InProgress` in **BOTH** task file and index (same commit)
 3. ✅ Add entry to task history: timestamp, "Significant Update", Review → InProgress, reason for update, User name
 4. ✅ Notify stakeholders that additional implementation work is needed
@@ -2466,68 +2617,53 @@ Step 5: Unblock Task (Blocked → InProgress)
 **Task File Template:**
 
 ```markdown
-# <Task-ID> <Task-Name>
+---
+type: task
+priority: medium
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+estimated_hours: X
+---
+# Task: [Task-ID] [Task-Name]
+[Back to task list](tasks.md)
 
-[Back to task list](mdc:tasks.md)
+## Goal
+[What this task achieves]
 
-## Description
-
-[Clear description of what needs to be accomplished]
-[Include context, motivation, and expected outcome]
+## Context
+[Why we're doing this]
 
 ## Status History
-
-| Timestamp | Event Type | From Status | To Status | Details | User |
-|-----------|------------|-------------|-----------|---------|------|
-| YYYY-MM-DD HH:MM:SS | Created | N/A | Proposed | Initial creation | username |
-| YYYY-MM-DD HH:MM:SS | Approved | Proposed | Agreed | Task approved and analysis complete | username |
+| Timestamp | Action | From Status | To Status | Details | User |
+|-----------|---------|---------|---------|---------|---------|
+| ... | ... | ... | ... | ... | ... |
 
 ## Requirements
-
 - [ ] Requirement 1
 - [ ] Requirement 2
-- [ ] Requirement 3
 
-## Implementation Plan
+## Implementation Steps
+1. Step 1: [Description]
+ - ...
+2. Step 2: [Description]
+ - ...
 
-### Step 1: [First step]
-[Details...]
+## Files to Modify/Create
+- [ ] path/to/file1.js - [What to do]
+- [ ] path/to/new-file.ts - [Create new]
 
-### Step 2: [Second step]
-[Details...]
+## Testing
+**Test Cases**:
+- [ ] Test case 1
+- [ ] Test case 2
 
-### Step 3: [Final step]
-[Details...]
+## Success Criteria
+- [ ] Implementation complete
+- [ ] Tests passing
+- [ ] Code follows standards
 
-## Test Plan
-
-[Proportional to task complexity - see Section 5.4]
-
-### Objective
-[What are we verifying?]
-
-### Test Scenarios
-1. Scenario 1
-2. Scenario 2
-
-### Success Criteria
-- ✅ Criterion 1
-- ✅ Criterion 2
-
-## Verification
-
-[How to verify the implementation works correctly]
-
-**Steps:**
-1. Step 1
-2. Step 2
-3. Expected result
-
-## Files Modified
-
-- `path/to/file1.ts`
-- `path/to/file2.ts`
-- `path/to/file3.test.ts`
+## References
+[Links to relevant docs]
 ```
 
 ---
