@@ -27,6 +27,27 @@ docs/rules/
 
 ---
 
+## 🤖 AI Agent System Instructions
+
+**⚠️ IMPORTANT FOR AI AGENTS:**
+
+Before working on this project, read the system instructions:
+
+**System Instructions:** `docs/setup-AI-flow/AI-Agent-Instruction/AGENTS.md`
+
+This file provides:
+- Primary directive and role definition
+- Critical rules that NEVER can be violated
+- Workflow overview and checkpoints
+- Quick start checklist
+- Common mistakes to avoid
+
+**Then, load the policy index:**
+
+**Policy Index:** `docs/rules/project-policy-index.md`
+
+---
+
 ## How to Use
 
 ### For AI Agents
