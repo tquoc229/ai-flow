@@ -507,7 +507,9 @@ User Request → Identify Task → Verify Scope → Execute OR Create New Task
 2. ✅ Document Conditions of Satisfaction (CoS) - what "done" means
 3. ✅ Assign unique PBI ID (use next sequential number)
 4. ✅ Add PBI entry to `backlog.md` with status `Proposed`
-5. ✅ Log in PBI history:
+5. ✅ Auto-approve Tasks: Tạo tất cả các file task chi tiết, điền đầy đủ `Implementation Steps` và `Test Cases`, và đặt status của chúng là `Agreed` (thay vì `Proposed`).
+6. ✅ Cập nhật PBI status thành `InProgress`
+7. ✅ Log in PBI history:
    - Action: "Created"
    - Details: Brief description of the PBI
    - User: Who created it
