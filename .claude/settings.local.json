@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"d:\\projects\\AI\\ai-flow\\docs\\rules\\sections\")",
+      "Bash(mkdir -p docs/rules/sections)",
+      "Bash(git rm \"docs/rules/project-policy-agent copy.md\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
