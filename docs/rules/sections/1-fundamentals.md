@@ -1,46 +1,67 @@
-# Section 1: Fundamental Principles
-
-[← Back to Index](mdc:../project-policy-index.md)
+[← Back to Index](../project-policy-index.md)
 
 ---
 
-## Overview
+# Section 1: Fundamentals
 
-This section defines the core principles and rules that govern ALL work in this project. These principles are **MANDATORY** and must be followed at all times.
+**Contains:** Introduction, Core Principles, AI Agent Automation Rules, PRD Alignment, Change Management
 
 ---
 
-## 1. Core Principles
+## 1. Introduction
 
-### 🎯 Task-Driven Development
+This policy provides a **single, authoritative, machine-readable source of truth** for AI coding agents and humans. It ensures all work is governed by clear, unambiguous rules and workflows.
+
+### 1.1 Actors
+
+| Actor | Role | Responsibilities |
+|-------|------|------------------|
+| **User** | Decision Maker | Defines requirements, prioritizes work, approves changes, accountable for all code |
+| **AI_Agent** | Executor | Implements User's instructions precisely as defined by PBIs and tasks |
+
+### 1.2 Architectural Compliance
+
+✅ All tasks must be explicitly defined and agreed upon before implementation
+✅ All code changes must be associated with a specific task
+✅ All PBIs must be aligned with the PRD when applicable
+
+---
+
+## 2. Fundamental Principles
+
+### 2.1 Core Principles
+
+These principles are **MANDATORY** and govern all work:
+
+#### 🎯 Task-Driven Development
 - ❌ **NO code changes** without an agreed-upon task
 - ✅ Every change must have explicit authorization
 
-### 📦 PBI Association
+#### 📦 PBI Association
 - ❌ **NO task creation** without an associated PBI
 - ✅ All work traces back to a Product Backlog Item
 
-### 📖 PRD Alignment
+#### 📖 PRD Alignment
 - ✅ If a PRD exists, all PBI features must align with its scope
 - ✅ Sense-check all features against PRD requirements
 
-### 👤 User Authority
+#### 👤 User Authority
 - ✅ User is the **sole decider** for scope and design
 - ✅ User retains responsibility for all code changes (even if AI implements)
 
-### 🚫 Prohibition of Unapproved Changes
+#### 🚫 Prohibition of Unapproved Changes
 - ❌ **EXPRESSLY PROHIBITED:** Any changes outside explicit task scope
 - ✅ Identify scope creep → roll back → create new task
 
-### 🔄 Task Status Synchronization
-- ✅ Status in `tasks.md` **MUST** match status in individual task file
+#### 🔄 Task Status Synchronization
+- ✅ Status in `1-tasks.md` **MUST** match status in individual task file
 - ✅ Update **BOTH** locations immediately on status change
 
-### 📄 Controlled File Creation
+#### 📄 Controlled File Creation
 - ❌ **DO NOT** create files outside defined structures (PBIs, tasks, source code)
 - ✅ Get **explicit User confirmation** before creating any standalone files
 
-### 📚 External Package Research
+#### 📚 External Package Research
 To avoid hallucinations when using external packages:
 
 1. **Research first:** Use web search to find official documentation
@@ -53,25 +74,25 @@ To avoid hallucinations when using external packages:
 
 **Example:** For task 2-1 using `pg-boss`, create `tasks/2-1-pg-boss-guide.md`
 
-### ⚙️ Task Granularity
+#### ⚙️ Task Granularity
 - ✅ Tasks should be **as small as practicable**
 - ✅ Must still represent a cohesive, testable unit
 - ✅ Break down complex features into multiple smaller tasks
 
-### 🔁 Don't Repeat Yourself (DRY)
+#### 🔁 Don't Repeat Yourself (DRY)
 Information should exist in **ONE** location:
 
 - ✅ Task details → in dedicated task files
 - ✅ PBI documents → reference tasks, don't duplicate
 - ✅ **Exception:** Titles/names can be repeated for clarity
 
-### 🔢 Use Constants for Values
+#### 🔢 Use Constants for Values
 - ❌ **BAD:** `for (let i = 0; i < 10; i++)`
 - ✅ **GOOD:** `const NUM_WEBSITES = 10; for (let i = 0; i < NUM_WEBSITES; i++)`
 
 **Rule:** Any value used more than once → define as named constant
 
-### 📖 Technical Documentation
+#### 📖 Technical Documentation
 For any PBI creating/modifying APIs or interfaces, create documentation including:
 
 - API usage examples and patterns
@@ -82,13 +103,24 @@ For any PBI creating/modifying APIs or interfaces, create documentation includin
 
 **Location:** `docs/technical/` or inline code documentation
 
+#### 🔁 Principle of Hierarchical Planning (PBI vs. Task)
+To maintain DRY, planning information must be hierarchical:
+
+- PBI Detail Document (prd.md): The Implementation Plan and Testing Strategy sections define the high-level, multi-task strategy (e.g., phases, milestones, testing approach).
+- Task Detail Document (<ID>-<TaskNum>.md): The Implementation Plan and Test Plan sections define the detailed, step-by-step, executable actions required to complete one part of the PBI's high-level plan.
+- The AI_Agent is responsible for decomposing the high-level PBI plan into detailed, actionable Tasks.
+
+#### ♻️ Legacy Code Prioritization
+- ✅ When analyzing a PBI or Task, the **AI_Agent** must *always* prioritize searching for and **leveraging** existing functions, APIs, components, and patterns within the codebase.
+- ❌ **PROHIBITED:** Writing new code for functionality that already exists.
+- ✅ All implementation plans (`Implementation Plan` / `Implementation Steps`) must explicitly state which legacy assets will be reused.
 ---
 
-## 2. AI Agent Automation Rules
+### 2.2 AI Agent Automation Rules
 
 **Purpose:** Defines how AI agents interact with workflow system to ensure synchronization and integrity across all tasks and PBIs.
 
-### Workflow Interaction Principles
+#### Workflow Interaction Principles
 
 The AI_Agent **MUST** automatically ensure:
 
@@ -99,7 +131,7 @@ The AI_Agent **MUST** automatically ensure:
    - ✅ No orphaned tasks or PBIs
 
 2. **Workflow State Management**
-   - ✅ Follow defined state transitions (see Section 2 for PBI, Section 3 for Tasks)
+   - ✅ Follow defined state transitions (see Section 3.3 for PBI, Section 4.3 for Tasks)
    - ✅ Validate pre-conditions before state changes
    - ✅ Execute all required actions during transitions
    - ✅ Log all state changes with timestamp and user
@@ -110,7 +142,7 @@ The AI_Agent **MUST** automatically ensure:
    - ✅ After any update: verify both locations are synchronized
    - ✅ Detect and report any inconsistencies immediately
 
-### Task Management Automation Flow
+#### Task Management Automation Flow
 
 When working with tasks, AI_Agent **AUTOMATICALLY**:
 
@@ -163,11 +195,11 @@ AI_Agent MUST:
     ├─ Review next task relevance
     ├─ Confirm with User if next tasks still valid
     ├─ Update both locations to Done
-    ├─ Execute version control workflow
+    ├─ Execute version control workflow (Section 4.8)
     └─ Log completion
 ```
 
-### PBI Management Automation Flow
+#### PBI Management Automation Flow
 
 When working with PBIs, AI_Agent **AUTOMATICALLY**:
 
@@ -184,33 +216,34 @@ AI_Agent MUST log:
     └─ Creation in PBI history
 ```
 
-**2. PBI Approval:**
+**2. PBI Plan Generation (User approves idea):**
 ```
-PBI status: Proposed → Agreed
+PBI status: Proposed → Agreed (User trigger)
     ↓
 AI_Agent MUST:
-    ├─ Create PBI detail document: <PBI-ID>/prd.md
-    ├─ Create task list: <PBI-ID>/tasks.md
-    ├─ Populate required sections
+    ├─ **(NEW) Scan codebase for reusable assets (Discovery)**
+    ├─ Create PBI detail document: <PBI-ID>/prd.md (using Template 2)
+    ├─ Populate all sections (high-level plan) **using Discovery findings**
     ├─ Link backlog ↔ detail document
-    └─ Log approval in history
+    ├─ Update PBI status → PlanInReview
+    └─ Log action in history
 ```
 
-**3. PBI Implementation:**
+**3. PBIPBI Task Decomposition (User approves plan):**
 ```
-PBI status: Agreed → InProgress
-    ↓
-AI_Agent MUST verify:
-    ├─ No other InProgress PBIs for same component
-    └─ Tasks are defined
+PBI status: PlanInReview → ReadyForTasks (User trigger)
     ↓
 AI_Agent MUST:
-    ├─ Update PBI status in backlog
-    ├─ Log start in history
+    ├─ Read approved prd.md
+    ├─ Create task list: <PBI-ID>/tasks.md
+    ├─ Decompose plan into all task files (<ID>-<TaskNum>.md)
+    ├─ Set all new tasks to Proposed
+    ├─ Update PBI status → InProgress
+    └─ Log action in history
     └─ Begin task execution flow
 ```
 
-**4. PBI Review:**
+**4. PBI Review (AI finishes all tasks):**
 ```
 PBI status: InProgress → InReview
     ↓
@@ -225,7 +258,7 @@ AI_Agent MUST:
     └─ Log submission
 ```
 
-### Automatic Validation Checkpoints
+#### Automatic Validation Checkpoints
 
 AI_Agent performs these checks **AUTOMATICALLY** at each interaction:
 
@@ -251,7 +284,7 @@ AI_Agent performs these checks **AUTOMATICALLY** at each interaction:
 3. ✅ Validate all links still work
 ```
 
-### Error Detection and Recovery
+#### Error Detection and Recovery
 
 AI_Agent **MUST** detect and report:
 
@@ -284,7 +317,7 @@ Error detected
 5. ✅ Verify resolution
 ```
 
-### Automation Safeguards
+#### Automation Safeguards
 
 To ensure proper workflow compliance, AI_Agent:
 
@@ -303,20 +336,20 @@ To ensure proper workflow compliance, AI_Agent:
 
 ---
 
-## 3. PRD Alignment Check
+### 2.3 PRD Alignment Check
 
 ✅ **MUST** check all PBIs for alignment with PRD
 ⚠️ **MUST** raise any discrepancies with User
 
 ---
 
-## 4. Integrity and Sense Checking
+### 2.4 Integrity and Sense Checking
 
 ✅ All data must be sense-checked for consistency and accuracy
 
 ---
 
-## 5. Scope Limitations
+### 2.5 Scope Limitations
 
 ❌ **NO gold plating** or scope creep
 ✅ All work scoped to specific task
@@ -324,7 +357,7 @@ To ensure proper workflow compliance, AI_Agent:
 
 ---
 
-## 6. Change Management Rules
+### 2.6 Change Management Rules
 
 **Before ANY code change:**
 
@@ -342,25 +375,11 @@ User Request → Identify Task → Verify Scope → Execute OR Create New Task
 
 ---
 
-## Quick Reference
+## Navigation
 
-**Key Questions to Ask:**
-
-1. "Is there an agreed task for this change?"
-   - If NO → Cannot proceed, need to create task first
-
-2. "Does this change fall within the task scope?"
-   - If NO → This is scope creep, create separate task
-
-3. "Have I updated status in BOTH locations?"
-   - If NO → Must update task file AND index together
-
-4. "Are there other InProgress tasks for this PBI?"
-   - If YES → Cannot start new task, wait for completion
-
-5. "Do I need to create a new file?"
-   - If YES → Get User confirmation first
+- [← Back to Index](../project-policy-index.md)
+- [Next: Section 2 - PBI Management →](./2-pbi-management.md)
 
 ---
 
-[← Back to Index](mdc:../project-policy-index.md) | [Next: PBI Management →](mdc:2-pbi-management.md)
+**End of Section 1**

@@ -1,6 +1,10 @@
+[← Back to Index](../project-policy-index.md) | [← Previous: Section 3](./3-task-management.md)
+
+---
+
 # Section 4: Testing Strategy
 
-[← Back to Index](mdc:../project-policy-index.md)
+**Contains:** Testing Overview, Principles, Test Scoping (Unit/Integration/E2E), Test Plan Documentation, Requirements, Distribution Strategy, Implementation Guidelines
 
 ---
 
@@ -767,4 +771,12 @@ describe('UserService', () => {
 
 ---
 
-[← Back to Index](mdc:../project-policy-index.md) | [Next: Quick Reference →](mdc:5-quick-reference.md)
+## Navigation
+
+- [← Back to Index](../project-policy-index.md)
+- [← Previous: Section 3 - Task Management](./3-task-management.md)
+- [Next: Section 5 - Quick Reference →](./5-quick-reference.md)
+
+---
+
+**End of Section 4**

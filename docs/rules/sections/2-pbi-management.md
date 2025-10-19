@@ -1,10 +1,16 @@
-# Section 2: PBI Management
-
-[← Back to Index](mdc:../project-policy-index.md)
+[← Back to Index](../project-policy-index.md) | [← Previous: Section 1](./1-fundamentals.md)
 
 ---
 
-## 3.1 Overview
+# Section 2: PBI Management
+
+**Contains:** PBI Overview, Backlog Structure, Workflow States, State Transitions, History Logging, PBI Detail Document Structure
+
+---
+
+## 3. Product Backlog Item (PBI) Management
+
+### 3.1 Overview
 
 **Purpose:** Defines how PBIs (Product Backlog Items) are managed throughout their lifecycle.
 
@@ -15,7 +21,7 @@
 
 ---
 
-## 3.2 Backlog Document Structure
+### 3.2 Backlog Document Structure
 
 **Location:** `docs/delivery/backlog.md`
 
@@ -38,22 +44,19 @@
 
 ---
 
-## 3.3 PBI Workflow States
+### 3.3 PBI Workflow States
 
-### State Definitions
+#### State Definitions
 
 | State | Description | What It Means |
 |-------|-------------|---------------|
-| `Proposed` | Initial state | PBI suggested but not yet approved |
-| `Agreed` | Approved | Ready for implementation, tasks can be created |
-| `InProgress` | Active work | Implementation underway, tasks being executed |
-| `InReview` | Awaiting validation | Implementation complete, pending User review |
-| `Done` | Completed | Accepted and merged, no further work needed |
-| `Rejected` | Not accepted | Requires rework or has been deprioritized |
+| `PlanInReview` | Awaiting plan approval | AI_Agent đã phân tích và tạo file prd.md chi tiết. Chờ User duyệt kế hoạch này. |
+| `ReadyForTasks` | Plan approved | User đã duyệt file prd.md. AI_Agent được phép phân rã kế hoạch này thành Tasks. |
+| `NeedsPlanRework` | Plan rejected | User từ chối kế hoạch trong prd.md, yêu cầu AI làm lại. |
 
 ---
 
-## 3.4 PBI State Transitions
+### 3.4 PBI State Transitions
 
 **Workflow Diagram:**
 
@@ -71,7 +74,7 @@
 
 ---
 
-### Transition 1: Creating a New PBI
+#### Transition 1: Creating a New PBI
 
 **When:** User or team identifies a new feature or requirement
 
@@ -89,7 +92,9 @@
 2. ✅ Document Conditions of Satisfaction (CoS) - what "done" means
 3. ✅ Assign unique PBI ID (use next sequential number)
 4. ✅ Add PBI entry to `backlog.md` with status `Proposed`
-5. ✅ Log in PBI history:
+5. ✅ Auto-approve Tasks: Tạo tất cả các file task chi tiết, điền đầy đủ `Implementation Steps` và `Test Cases`, và đặt status của chúng là `Agreed` (thay vì `Proposed`).
+6. ✅ Cập nhật PBI status thành `InProgress`
+7. ✅ Log in PBI history:
    - Action: "Created"
    - Details: Brief description of the PBI
    - User: Who created it
@@ -98,65 +103,72 @@
 
 ---
 
-### Transition 2: Approving PBI for Backlog
+#### Transition 2: User Approves PBI Idea / AI Generates Plan
 
-**When:** User reviews proposed PBI and approves it for implementation
+**When:** User approves the 1-line PBI idea in `backlog.md`
 
-**State Change:** `Proposed` → `Agreed`
+**State Change:** `Proposed` → `PlanInReview`
 
-**Who Can Do This:** User only
+**Who Can Do This:** User (triggers), AI_Agent (executes)
 
-**Before Approving:**
-- ✅ PBI aligns with PRD (if PRD exists)
-- ✅ User story is clear and complete
-- ✅ Conditions of Satisfaction are specific and measurable
-- ✅ No duplicate PBIs exist
+**Before (User):**
+* User sets 1-line PBI status from `Proposed` to `Agreed` in `backlog.md`. (This `Agreed` status is a temporary trigger).
 
 **AI_Agent MUST Do:**
-1. ✅ Create directory: `docs/delivery/<PBI-ID>/`
-2. ✅ Create PBI detail document: `docs/delivery/<PBI-ID>/prd.md` with all required sections
-3. ✅ Create task list file: `docs/delivery/<PBI-ID>/tasks.md`
-4. ✅ Set up bidirectional links:
-   - From backlog to detail document
-   - From detail document back to backlog
-5. ✅ Update PBI status to `Agreed` in backlog
-6. ✅ Log in PBI history:
-   - Action: "Approved for Backlog"
-   - Details: Why approved, any PRD alignment notes
-   - User: User name who approved
+1.  ✅ **Detect** PBI status changed to `Agreed`.
+2.  ✅ **(NEW) Perform Targeted Legacy Discovery:**
+    * **a. Generate Keywords:** Based on the PBI `User Story`, generate a list of relevant search keywords (e.g., "profile", "user", "functionName").
+    * **b. Execute Search:** Use code search tools (e.g., `ripgrep`, vector search) to find a *small set* of the **MOST RELEVANT** files or code chunks.
+    * **c. Read Context:** Read **ONLY** that small, relevant set of files. **DO NOT read the entire codebase.** This is critical to conserve tokens and prevent overload.
+3.  ✅ **Create directory:** `docs/delivery/<PBI-ID>/`
+4.  ✅ **Create PBI detail document:** `docs/delivery/<PBI-ID>/prd.md` using Template 2 (Section 3.6).
+5.  ✅ **Perform Analysis & Populate:** Auto-fill all sections in the `prd.md` file.
+    * **CRITICAL:** The `Legacy Discovery Findings` section **MUST** be populated based on the results from the *targeted* discovery (Step 2c).
+    * The high-level `Implementation Plan` must prioritize *modifying* legacy code over *creating* new code, based on these findings.
+6.  ✅ **Set up bidirectional links:**
+    * In `backlog.md`: Update the 1-line PBI to link to the new `prd.md` file.
+    * In `prd.md`: Add a link back to `backlog.md`.
+7.  ✅ **Update PBI status to `PlanInReview`** in `backlog.md`.
+8.  ✅ **Log in PBI history:**
+    * Action: "Generated Plan for Review"
+    * Details: "AI performed *Targeted Discovery* and generated detailed PBI plan, awaiting User approval"
+    * User: ai-agent
 
-**Next Step:** Define tasks needed to implement this PBI
+**Next Step:** Wait for User to review the detailed plan in `prd.md`.
 
 ---
 
-### Transition 3: Starting PBI Implementation
+#### Transition 3: User Approves Plan / AI Decomposes Tasks
 
-**When:** Ready to begin work on PBI, tasks are defined
+**When**: User reviews and approves the detailed plan in prd.md.
 
-**State Change:** `Agreed` → `InProgress`
+**State Change**: `PlanInReview` → `InProgress`
 
-**Who Can Do This:** User or AI_Agent
+**Who Can Do This**: User (triggers), AI_Agent (executes)
 
-**Before Starting:**
-- ✅ No other PBIs are `InProgress` for the same component
-- ✅ Tasks are defined and listed in task list
-- ✅ All dependencies are available
+**Before (User)**:
+- User reviews `prd.md`, thực hiện mọi chỉnh sửa cần thiết.
+- User sets PBI status from `PlanInReview` to `ReadyForTasks` in `backlog.md`. (This `ReadyForTasks` is a temporary trigger).
 
-**AI_Agent MUST Do:**
-1. ✅ Verify no conflicting InProgress PBIs exist
-2. ✅ Confirm task list has at least one task
-3. ✅ Update PBI status to `InProgress` in backlog
-4. ✅ Log in PBI history:
-   - Action: "Started Implementation"
-   - Details: Number of tasks created, which task starting first
-   - User: Who initiated (usually ai-agent)
-5. ✅ Begin working on first task (see Section 3: Task Management)
+**AI_Agent MUST Do**:
 
-**Next Step:** Work through tasks one by one until all are Done
+1. ✅ **Detect** PBI status changed to `ReadyForTasks`.
+2. ✅ **Read** file `prd.md` đã được User phê duyệt.
+3. ✅ **Create task list file**: `docs/delivery/<PBI-ID>/tasks.md` (theo cấu trúc Mục 4.10).
+4. ✅ **Decompose Plan**: Đọc `Implementation Plan` cấp cao (từ `prd.md`) và phân rã nó thành các Task chi tiết.
+5. ✅ **Create ALL Task Files**: Tạo tất cả các file task chi tiết (ví dụ: `<PBI-ID>-1.md`, `<PBI-ID>-2.md`...) theo (Mục 4.2).
+6. ✅ **Set all new tasks to** `Proposed` (sẵn sàng cho User duyệt từng task).
+7. ✅ **Update PBI status to** `InProgress` trong `backlog.md` (báo hiệu PBI đã chính thức bắt đầu được triển khai).
+8. ✅ **Log in PBI history**:
+ - Action: "Plan Approved, Tasks Decomposed"
+ - Details: "User approved plan. AI decomposed into [X] tasks."
+ - User: ai-agent
+
+Next Step: Workflow Task Management (Mục 4) bắt đầu. User duyệt (approve) Task đầu tiên (`Proposed` -> `Agreed`) để AI bắt đầu code.
 
 ---
 
-### Transition 4: Submitting PBI for Review
+#### Transition 4: Submitting PBI for Review
 
 **When:** All tasks complete, ready for User validation
 
@@ -185,7 +197,7 @@
 
 ---
 
-### Transition 5: Approving Completed PBI
+#### Transition 5: Approving Completed PBI
 
 **When:** User reviews PBI and confirms it meets all requirements
 
@@ -213,11 +225,11 @@
 
 ---
 
-### Transition 6: Rejecting PBI After Review
+#### Transition 6: Rejecting PBI After Review
 
 **When:** User reviews PBI and finds issues that need to be fixed
 
-**State Change:** `InReview` → `Rejected`
+**State Change:** `InReview` → `Rejected`, `PlanInReview` → `NeedsPlanRework`
 
 **Who Can Do This:** User only
 
@@ -235,11 +247,11 @@
    - User: User name who rejected
 6. ✅ Notify team of required changes
 
-**Next Step:** Address feedback and reopen PBI
+**Next Step:** Address feedback and reopen PBI (see next transition)
 
 ---
 
-### Transition 7: Reopening Rejected PBI
+#### Transition 7: Reopening Rejected PBI
 
 **When:** Issues from rejection have been addressed
 
@@ -265,11 +277,11 @@
 
 ---
 
-### Transition 8: Deprioritizing PBI
+#### Transition 8: Deprioritizing PBI
 
 **When:** PBI needs to be postponed or moved down in priority
 
-**State Change:** `Agreed` or `InProgress` → `Proposed`
+**State Change:** `ReadyForTasks` or `InProgress` → `Proposed`
 
 **Who Can Do This:** User only
 
@@ -291,7 +303,7 @@
 
 ---
 
-## 3.5 PBI History Logging
+### 3.5 PBI History Logging
 
 **Location:** In `docs/delivery/backlog.md` under "## PBI History" section
 
@@ -336,61 +348,189 @@ Use **plain language** that describes what you did:
 | 2025-10-23 10:30:00 | PBI-1 | Approved | All CoS verified and accepted, merged to main | Julian |
 ```
 
+**More Examples:**
+
+```markdown
+## PBI History
+
+| Timestamp | PBI_ID | Action | Details | User |
+|-----------|--------|--------|---------|------|
+| 2025-10-19 10:00:00 | PBI-2 | Created | Email notification system proposal | Julian |
+| 2025-10-19 10:30:00 | PBI-2 | Approved for Backlog | High priority feature for Q4 | Julian |
+| 2025-10-20 14:00:00 | PBI-2 | Started Implementation | Created 3 tasks for email service | ai-agent |
+| 2025-10-21 09:00:00 | PBI-2 | Blocked | Waiting for email service API credentials | ai-agent |
+| 2025-10-22 11:00:00 | PBI-2 | Unblocked | Credentials received, resuming work | Julian |
+| 2025-10-24 15:00:00 | PBI-2 | Submitted for Review | Implementation complete, ready for testing | ai-agent |
+| 2025-10-25 10:00:00 | PBI-2 | Rejected | Email templates need redesign per UX feedback | Julian |
+| 2025-10-25 11:00:00 | PBI-2 | Reopened | Created new task 2-4 for template redesign | ai-agent |
+| 2025-10-26 16:00:00 | PBI-2 | Submitted for Review | Templates redesigned and approved | ai-agent |
+| 2025-10-27 09:30:00 | PBI-2 | Approved | Feature complete and deployed | Julian |
+```
+
 ---
 
-## 3.6 PBI Detail Document Structure
+### 3.6 PBI Detail Document Structure
 
 **Location:** `docs/delivery/<PBI-ID>/prd.md`
 
 **Purpose:**
-- Serves as mini-PRD for the PBI
-- Documents problem space and solution approach
-- Provides technical and UX details
-- Maintains single source of truth for PBI information
+- Serves as the primary source of truth for all PBI context, requirements, and high-level planning.
+- Documents the problem space, desired state, and strategic approach.
+- Provides the high-level plan for the AI_Agent to decompose into granular tasks.
 
 **Required Sections:**
 
 ```markdown
-# PBI-<ID>: <Title>
+---
+type: feature
+status: todo
+priority: medium
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+estimated_hours: X
+---
 
-## Overview
-[High-level summary of what this PBI delivers]
+# Feature: [Feature Name]
 
-## Problem Statement
-[What problem are we solving? Why is it important?]
+## Context
 
-## User Stories
-[Detailed user stories and scenarios]
+**Why do we need this feature?**
+[Explain the problem or opportunity]
+
+**Current Situation:**
+[What exists now]
+
+**Desired State:**
+[What we want]
+
+## User Story
+
+As a [user type]
+I want [capability]
+So that [benefit]
+
+**Example Scenario:**
+
+```
+Given [precondition]
+When [user action]
+Then [expected outcome]
+```
+
+## Requirements
+
+### Functional Requirements
+
+- [ ] REQ-1: [Specific requirement]
+- [ ] REQ-2: [Specific requirement]
+- [ ] REQ-3: [Specific requirement]
+
+### Non-Functional Requirements
+
+- [ ] Performance: [e.g., Response time < 200ms]
+- [ ] Security: [e.g., Requires authentication]
+- [ ] Scalability: [e.g., Support 1000 concurrent users]
 
 ## Technical Approach
-[How we will implement this technically]
 
-## UX/UI Considerations
-[User experience and interface design notes]
+**Architecture:**
 
-## Acceptance Criteria
-[Specific, measurable criteria for completion - same as CoS in backlog]
+```
+[Describe or diagram the architecture]
+```
+---
 
-## Dependencies
-[Other PBIs, external services, or systems this depends on]
+---
+### **Legacy Discovery Findings**
+[**AI_Agent MUST FILL THIS SECTION.** Report on existing files, functions, APIs, or components relevant to this PBI, adhering to the `Legacy Code Prioritization` principle.]
 
-## Open Questions
-[Unresolved questions that need answers]
+- **File:** `path/to/relevant/file.ts`
+    - **Function/API:** `functionName()`
+    - **Notes:** [Will be reused/extended for...]
+- **Component:** `path/to/component.vue`
+    - **Notes:** [Will be reused...]
 
-## Related Tasks
-[Links to task list and individual tasks]
+---
+
+**Key Components (To build/modify):**
+[List new components to build OR existing components to modify, based on "Discovery Findings" above.]
+
+1. Component A: [Purpose]
+2. Component B: [Purpose]
+3. Component C: [Purpose]
+
+**Technology Stack:**
+
+- Frontend: [technologies]
+- Backend: [technologies]
+- Database: [technologies]
+- External Services: [APIs, libraries]
+
+## Implementation Plan
+
+### Phase 1: [Phase Name]
+
+1. Step 1: [Description]
+
+   - Files: [list files to create/modify]
+   - Estimated: [time]
+
+2. Step 2: [Description]
+   - Files: [list files]
+   - Estimated: [time]
+
+### Phase 2: [Phase Name]
+
+...
+
+## Testing Strategy
+
+**Unit Tests:**
+
+- Test case 1
+- Test case 2
+
+**Integration Tests:**
+
+- Test scenario 1
+- Test scenario 2
+
+**E2E Tests:**
+
+- User flow 1
+- User flow 2
+
+## Success Criteria
+
+- [ ] All functional requirements met
+- [ ] All tests passing
+- [ ] Code reviewed and approved
+- [ ] Documentation updated
+- [ ] Performance benchmarks met
+
+## References
+
+- [Link to design doc]
+- [Link to API spec]
+- [Link to similar implementation]
+
+## Notes
+
+[Any additional notes, constraints, or considerations]
+
+
 ```
 
 **Document Linking:**
 
 **From PBI detail to backlog:**
 ```markdown
-**Backlog Entry:** [View in Backlog](mdc:../backlog.md#user-content-PBI-<ID>)
+**Backlog Entry:** [View in Backlog](../backlog.md#user-content-PBI-<ID>)
 ```
 
 **From backlog to PBI detail:**
 ```markdown
-| 1 | User | As a user... | Agreed | [View Details](mdc:1/prd.md) |
+| 1 | User | As a user... | Agreed | [View Details](1/prd.md) |
 ```
 
 **Creation and Ownership:**
@@ -401,4 +541,12 @@ Use **plain language** that describes what you did:
 
 ---
 
-[← Back to Index](mdc:../project-policy-index.md) | [Next: Task Management →](mdc:3-task-management.md)
+## Navigation
+
+- [← Back to Index](../project-policy-index.md)
+- [← Previous: Section 1 - Fundamentals](./1-fundamentals.md)
+- [Next: Section 3 - Task Management →](./3-task-management.md)
+
+---
+
+**End of Section 2**

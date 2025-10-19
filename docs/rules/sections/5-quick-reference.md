@@ -1,6 +1,10 @@
+[← Back to Index](../project-policy-index.md) | [← Previous: Section 4](./4-testing-strategy.md)
+
+---
+
 # Section 5: Quick Reference
 
-[← Back to Index](mdc:../project-policy-index.md)
+**Contains:** Common Workflow Patterns, Commands, Decision Trees, Validation Checklists, Common Pitfalls, Best Practices
 
 ---
 
@@ -163,68 +167,53 @@ Step 5: Unblock Task (Blocked → InProgress)
 **Task File Template:**
 
 ```markdown
-# <Task-ID> <Task-Name>
+---
+type: task
+priority: medium
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+estimated_hours: X
+---
+# Task: [Task-ID] [Task-Name]
+[Back to task list](tasks.md)
 
-[Back to task list](mdc:tasks.md)
+## Goal
+[What this task achieves]
 
-## Description
-
-[Clear description of what needs to be accomplished]
-[Include context, motivation, and expected outcome]
+## Context
+[Why we're doing this]
 
 ## Status History
-
-| Timestamp | Event Type | From Status | To Status | Details | User |
-|-----------|------------|-------------|-----------|---------|------|
-| YYYY-MM-DD HH:MM:SS | Created | N/A | Proposed | Initial creation | username |
-| YYYY-MM-DD HH:MM:SS | Approved | Proposed | Agreed | Task approved and analysis complete | username |
+| Timestamp | Action | From Status | To Status | Details | User |
+|-----------|---------|---------|---------|---------|---------|
+| ... | ... | ... | ... | ... | ... |
 
 ## Requirements
-
 - [ ] Requirement 1
 - [ ] Requirement 2
-- [ ] Requirement 3
 
-## Implementation Plan
+## Implementation Steps
+1. Step 1: [Description]
+ - ...
+2. Step 2: [Description]
+ - ...
 
-### Step 1: [First step]
-[Details...]
+## Files to Modify/Create
+- [ ] path/to/file1.js - [What to do]
+- [ ] path/to/new-file.ts - [Create new]
 
-### Step 2: [Second step]
-[Details...]
+## Testing
+**Test Cases**:
+- [ ] Test case 1
+- [ ] Test case 2
 
-### Step 3: [Final step]
-[Details...]
+## Success Criteria
+- [ ] Implementation complete
+- [ ] Tests passing
+- [ ] Code follows standards
 
-## Test Plan
-
-[Proportional to task complexity - see Section 5.4]
-
-### Objective
-[What are we verifying?]
-
-### Test Scenarios
-1. Scenario 1
-2. Scenario 2
-
-### Success Criteria
-- ✅ Criterion 1
-- ✅ Criterion 2
-
-## Verification
-
-[How to verify the implementation works correctly]
-
-**Steps:**
-1. Step 1
-2. Step 2
-3. Expected result
-
-## Files Modified
-
-- `path/to/file1.ts`
-- `path/to/file2.ts`
-- `path/to/file3.test.ts`
+## References
+[Links to relevant docs]
 ```
 
 ---
@@ -538,7 +527,7 @@ Question 4: Are all dependencies available?
 - Create task file IMMEDIATELY when adding to index
 
 ❌ **Broken links**
-- Always use `mdc:` protocol for internal links
+- Use relative paths for internal links
 - Test links after creation
 - Maintain bidirectional linking
 
@@ -714,4 +703,11 @@ Question 4: Are all dependencies available?
 
 ---
 
-[← Back to Index](mdc:../project-policy-index.md)
+## Navigation
+
+- [← Back to Index](../project-policy-index.md)
+- [← Previous: Section 4 - Testing Strategy](./4-testing-strategy.md)
+
+---
+
+**End of Section 5**

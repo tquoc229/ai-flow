@@ -1,6 +1,10 @@
+[← Back to Index](../project-policy-index.md) | [← Previous: Section 2](./2-pbi-management.md)
+
+---
+
 # Section 3: Task Management
 
-[← Back to Index](mdc:../project-policy-index.md)
+**Contains:** Task Overview, Document Structure, Workflow States, State Transitions, Synchronization, History Logging, Validation Rules, Version Control
 
 ---
 
@@ -32,28 +36,54 @@
 **Required Sections in Task Files:**
 
 ```markdown
-# [Task-ID] [Task-Name]
+---
+type: task
+priority: medium
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+estimated_hours: X
+---
+# Task: [Task-ID] [Task-Name]
+[Back to task list](tasks.md)
 
-## Description
-[Clear description of what needs to be accomplished]
+## Goal
+[What this task achieves]
+
+## Context
+[Why we're doing this]
 
 ## Status History
-[Table with all status changes - see Section 4.6]
+| Timestamp | Action | From Status | To Status | Details | User |
+|-----------|---------|---------|---------|---------|---------|
+| ... | ... | ... | ... | ... | ... |
 
 ## Requirements
-[Specific requirements and acceptance criteria]
+- [ ] Requirement 1
+- [ ] Requirement 2
 
-## Implementation Plan
-[Step-by-step approach to implementation]
+## Implementation Steps
+1. Step 1: [Description]
+ - ...
+2. Step 2: [Description]
+ - ...
 
-## Test Plan
-[Testing approach - proportional to complexity]
+## Files to Modify/Create
+- [ ] path/to/file1.js - [What to do]
+- [ ] path/to/new-file.ts - [Create new]
 
-## Verification
-[How to verify the implementation works]
+## Testing
+**Test Cases**:
+- [ ] Test case 1
+- [ ] Test case 2
 
-## Files Modified
-[List of all files changed by this task]
+## Success Criteria
+- [ ] Implementation complete
+- [ ] Tests passing
+- [ ] Code follows standards
+
+## References
+[Links to relevant docs]
+
 ```
 
 **Core Principles:**
@@ -68,12 +98,12 @@
 
 **From task index to task file:**
 ```markdown
-| 6-1 | [Define Circuit Breaker](mdc:6-1.md) | Proposed | ... |
+| 6-1 | [Define Circuit Breaker](6-1.md) | Proposed | ... |
 ```
 
 **From task file to task index:**
 ```markdown
-[Back to task list](mdc:tasks.md)
+[Back to task list](tasks.md)
 ```
 
 ---
@@ -126,10 +156,10 @@
 
 **AI_Agent MUST Do:**
 1. ✅ Create task documentation file named: `<PBI-ID>-<TASK-ID>.md`
-2. ✅ Add task entry to task index with link: `[description](mdc:<PBI-ID>-<TASK-ID>.md)`
+2. ✅ Add task entry to task index with link: `[description](<PBI-ID>-<TASK-ID>.md)`
 3. ✅ Populate all required sections in task file (Description, Requirements, etc.)
-4. ✅ Complete analysis and design work - document in Implementation Plan section
-5. ✅ Define test plan appropriate to task complexity
+4. ✅ Complete analysis and design work - document in Implementation Steps section
+5. ✅ Define test cases in Testing section appropriate to task complexity
 6. ✅ Update task status to `Agreed` in **BOTH** task file and index
 7. ✅ Add entries to task history:
    - First entry - Event_Type: "Created", From: N/A, To: Proposed
@@ -152,7 +182,7 @@
 - ✅ No other tasks have status `InProgress` for this same PBI
 - ✅ Task status is `Agreed` in both task file AND index
 - ✅ All dependencies are available
-- ✅ Implementation plan is clear
+- ✅ Implementation Steps are clear
 
 **AI_Agent MUST Do:**
 1. ✅ Check that no other tasks for this PBI are `InProgress`
@@ -183,9 +213,9 @@
 
 **Before Submitting:**
 - ✅ All requirements from Requirements section are implemented
-- ✅ All tests from Test Plan are written and passing
+- ✅ All Test Cases from Testing section are implemented and passing
 - ✅ Code follows project standards and conventions
-- ✅ All modified files are documented in "Files Modified" section
+- ✅ All modified files are documented in "Files to Modify/Create" section
 
 **AI_Agent MUST Do:**
 1. ✅ Run all relevant tests and verify they pass
@@ -284,8 +314,8 @@
 **AI_Agent MUST Do:**
 1. ✅ Document the nature of significant changes to:
    - Requirements section (if requirements changed)
-   - Implementation Plan (if approach changed)
-   - Test Plan (if testing needs changed)
+   - Implementation Steps (if approach changed)
+   - Testing (if test cases changed)
 2. ✅ Update task status to `InProgress` in **BOTH** task file and index (same commit)
 3. ✅ Add entry to task history: timestamp, "Significant Update", Review → InProgress, reason for update, User name
 4. ✅ Notify stakeholders that additional implementation work is needed
@@ -394,7 +424,7 @@
 ```markdown
 | Task ID | Name | Status | Description |
 | :------ | :--- | :----- | :---------- |
-| 6-1 | [Define Circuit Breaker](mdc:6-1.md) | Done | Define core state machine |
+| 6-1 | [Define Circuit Breaker](6-1.md) | Done | Define core state machine |
 ```
 
 ---
@@ -678,15 +708,15 @@ git acp "<task-id> <task-description>"
 
 This document lists all tasks associated with PBI <PBI-ID>.
 
-**Parent PBI**: [PBI <PBI-ID>: <PBI Title>](mdc:prd.md)
+**Parent PBI**: [PBI <PBI-ID>: <PBI Title>](prd.md)
 
 ## Task Summary
 
 | Task ID | Name | Status | Description |
 | :------ | :--- | :----- | :---------- |
-| 6-1 | [Define Circuit Breaker state machine](mdc:6-1.md) | Proposed | Define core state machine logic |
-| 6-2 | [Implement retry logic with backoff](mdc:6-2.md) | Agreed | Add exponential backoff retry mechanism |
-| 6-3 | [Add monitoring and metrics](mdc:6-3.md) | Proposed | Implement health check and metrics |
+| 6-1 | [Define Circuit Breaker state machine](6-1.md) | Proposed | Define core state machine logic |
+| 6-2 | [Implement retry logic with backoff](6-2.md) | Agreed | Add exponential backoff retry mechanism |
+| 6-3 | [Add monitoring and metrics](6-3.md) | Proposed | Implement health check and metrics |
 ```
 
 **Column Definitions:**
@@ -694,7 +724,7 @@ This document lists all tasks associated with PBI <PBI-ID>.
 | Column | Content | Format |
 |--------|---------|--------|
 | **Task ID** | Unique identifier | `<PBI-ID>-<TaskNum>` (e.g., `6-1`) |
-| **Name** | Task name with link | `[Task Name](mdc:<PBI-ID>-<TaskNum>.md)` |
+| **Name** | Task name with link | `[Task Name](<PBI-ID>-<TaskNum>.md)` |
 | **Status** | Current status | One of: `Proposed`, `Agreed`, `InProgress`, `Review`, `Done`, `Blocked` |
 | **Description** | Brief summary | One-sentence description of task objective |
 
@@ -719,4 +749,12 @@ The Task Summary table **MUST** contain:
 
 ---
 
-[← Back to Index](mdc:../project-policy-index.md) | [Next: Testing Strategy →](mdc:4-testing-strategy.md)
+## Navigation
+
+- [← Back to Index](../project-policy-index.md)
+- [← Previous: Section 2 - PBI Management](./2-pbi-management.md)
+- [Next: Section 4 - Testing Strategy →](./4-testing-strategy.md)
+
+---
+
+**End of Section 3**

@@ -1,6 +1,6 @@
 **AI_Agent MUST Do:**
 1. ✅ Create task documentation file named: `<PBI-ID>-<TASK-ID>.md`
-2. ✅ Add task entry to task index with link: `[description](mdc:<PBI-ID>-<TASK-ID>.md)`
+2. ✅ Add task entry to task index with link: `[description](<PBI-ID>-<TASK-ID>.md)`
 3. ✅ Populate all required sections in task file (Description, Requirements, etc.)
 4. ✅ Complete analysis and design work - document in Implementation Plan section
 5. ✅ Define test plan appropriate to task complexity
@@ -940,12 +940,12 @@ Then [expected outcome]
 
 **From PBI detail to backlog:**
 ```markdown
-**Backlog Entry:** [View in Backlog](mdc:../backlog.md#user-content-PBI-<ID>)
+**Backlog Entry:** [View in Backlog](../backlog.md#user-content-PBI-<ID>)
 ```
 
 **From backlog to PBI detail:**
 ```markdown
-| 1 | User | As a user... | Agreed | [View Details](mdc:1/prd.md) |
+| 1 | User | As a user... | Agreed | [View Details](1/prd.md) |
 ```
 
 **Creation and Ownership:**
@@ -1046,12 +1046,12 @@ estimated_hours: X
 
 **From task index to task file:**
 ```markdown
-| 6-1 | [Define Circuit Breaker](mdc:6-1.md) | Proposed | ... |
+| 6-1 | [Define Circuit Breaker](6-1.md) | Proposed | ... |
 ```
 
 **From task file to task index:**
 ```markdown
-[Back to task list](mdc:tasks.md)
+[Back to task list](tasks.md)
 ```
 
 ---
@@ -1104,7 +1104,7 @@ estimated_hours: X
 
 **AI_Agent MUST Do:**
 1. ✅ Create task documentation file named: `<PBI-ID>-<TASK-ID>.md`
-2. ✅ Add task entry to task index with link: `[description](mdc:<PBI-ID>-<TASK-ID>.md)`
+2. ✅ Add task entry to task index with link: `[description](<PBI-ID>-<TASK-ID>.md)`
 3. ✅ Populate all required sections in task file (Description, Requirements, etc.)
 4. ✅ Complete analysis and design work - document in Implementation Steps section
 5. ✅ Define test cases in Testing section appropriate to task complexity
@@ -1372,7 +1372,7 @@ estimated_hours: X
 ```markdown
 | Task ID | Name | Status | Description |
 | :------ | :--- | :----- | :---------- |
-| 6-1 | [Define Circuit Breaker](mdc:6-1.md) | Done | Define core state machine |
+| 6-1 | [Define Circuit Breaker](6-1.md) | Done | Define core state machine |
 ```
 
 ---
@@ -1656,15 +1656,15 @@ git acp "<task-id> <task-description>"
 
 This document lists all tasks associated with PBI <PBI-ID>.
 
-**Parent PBI**: [PBI <PBI-ID>: <PBI Title>](mdc:prd.md)
+**Parent PBI**: [PBI <PBI-ID>: <PBI Title>](prd.md)
 
 ## Task Summary
 
 | Task ID | Name | Status | Description |
 | :------ | :--- | :----- | :---------- |
-| 6-1 | [Define Circuit Breaker state machine](mdc:6-1.md) | Proposed | Define core state machine logic |
-| 6-2 | [Implement retry logic with backoff](mdc:6-2.md) | Agreed | Add exponential backoff retry mechanism |
-| 6-3 | [Add monitoring and metrics](mdc:6-3.md) | Proposed | Implement health check and metrics |
+| 6-1 | [Define Circuit Breaker state machine](6-1.md) | Proposed | Define core state machine logic |
+| 6-2 | [Implement retry logic with backoff](6-2.md) | Agreed | Add exponential backoff retry mechanism |
+| 6-3 | [Add monitoring and metrics](6-3.md) | Proposed | Implement health check and metrics |
 ```
 
 **Column Definitions:**
@@ -1672,7 +1672,7 @@ This document lists all tasks associated with PBI <PBI-ID>.
 | Column | Content | Format |
 |--------|---------|--------|
 | **Task ID** | Unique identifier | `<PBI-ID>-<TaskNum>` (e.g., `6-1`) |
-| **Name** | Task name with link | `[Task Name](mdc:<PBI-ID>-<TaskNum>.md)` |
+| **Name** | Task name with link | `[Task Name](<PBI-ID>-<TaskNum>.md)` |
 | **Status** | Current status | One of: `Proposed`, `Agreed`, `InProgress`, `Review`, `Done`, `Blocked` |
 | **Description** | Brief summary | One-sentence description of task objective |
 
@@ -2979,7 +2979,7 @@ Question 4: Are all dependencies available?
 - Create task file IMMEDIATELY when adding to index
 
 ❌ **Broken links**
-- Always use `mdc:` protocol for internal links
+- Use relative paths for internal links
 - Test links after creation
 - Maintain bidirectional linking
 

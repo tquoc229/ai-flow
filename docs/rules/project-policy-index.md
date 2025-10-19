@@ -1,246 +1,257 @@
 # AI Coding Agent Project Policy - Index
 
-**Version:** 2.0
+**Version:** 2.0 (Modular)
 **Last Updated:** 2025-10-19
-**Applies To:** All AI coding agents and software engineers
+**Applies To:** All AI coding agents and Vietnamese software engineers
 
 ---
 
-## 📌 Quick Start for AI Agents
+## Overview
 
-This is the **main entry point** for understanding the project workflow. The complete policy has been modularized for efficient token usage. Load specific sections as needed.
-
----
-
-## 🎯 Core Principles (Must Read First)
-
-**Task-Driven Development:**
-- ❌ NO code changes without an agreed-upon task
-- ✅ Every change must have explicit authorization
-
-**PBI Association:**
-- ❌ NO task creation without an associated PBI
-- ✅ All work traces back to a Product Backlog Item
-
-**User Authority:**
-- ✅ User is the sole decider for scope and design
-- ✅ User retains responsibility for all code changes
-
-**Status Synchronization:**
-- ✅ Status in task index MUST match status in task file
-- ✅ Update BOTH locations immediately on status change
-
-**File Creation:**
-- ❌ DO NOT create files outside defined structures
-- ✅ Get explicit User confirmation before creating standalone files
+This is the **modular version** of the AI Coding Agent Project Policy, split into focused sections for easier navigation and maintenance. This policy provides a **single, authoritative, machine-readable source of truth** for AI coding agents and humans, ensuring all work is governed by clear, unambiguous rules and workflows.
 
 ---
 
-## 📚 Detailed Documentation Sections
+## Core Principles (Quick Summary)
 
-### Section 1: Fundamental Principles
-**File:** `./docs/sections/1-fundamentals.md`
+### Task-Driven Development
+- **NO code changes** without an agreed-upon task
+- Every change must have explicit authorization
+- All work traces back to a Product Backlog Item (PBI)
 
-**When to reference:** Before starting any work, when uncertain about workflow rules
+### User Authority
+- User is the **sole decider** for scope and design
+- User retains responsibility for all code changes (even if AI implements)
+
+### Status Synchronization
+- Status in task files **MUST** match status in index files
+- Update **BOTH** locations immediately on status change
+
+### Prohibited Actions
+- **NO** changes outside explicit task scope
+- **NO** file creation without User confirmation
+- **NO** gold plating or scope creep
+
+---
+
+## Documentation Structure
+
+This policy is organized into **5 focused sections** plus this index:
+
+### [Section 1: Fundamentals](./sections/1-fundamentals.md)
+**Core principles and rules governing all work**
 
 **Contains:**
-- Core principles (Task-Driven, PBI Association, etc.)
-- AI Agent automation rules
-- PRD alignment requirements
-- Change management rules
-- Scope limitations and validation
-- External package research guidelines
+- 1.1 Actors (User and AI_Agent roles)
+- 1.2 Architectural Compliance
+- 2.1 Core Principles (Task-Driven Development, PBI Association, PRD Alignment)
+- 2.2 AI Agent Automation Rules
+- 2.3 PRD Alignment Check
+- 2.4 Integrity and Sense Checking
+- 2.5 Scope Limitations
+- 2.6 Change Management Rules
 
-**Key topics:** DRY principle, constants usage, technical documentation requirements
+**Use this section when:**
+- Starting a new project
+- Onboarding new team members
+- Clarifying fundamental workflow rules
+- Understanding AI Agent automation requirements
 
 ---
 
-### Section 2: PBI Management
-**File:** `./docs/sections/2-pbi-management.md`
-
-**When to reference:** Creating/managing Product Backlog Items, PBI state transitions
+### [Section 2: PBI Management](./sections/2-pbi-management.md)
+**Product Backlog Item lifecycle and workflows**
 
 **Contains:**
-- PBI workflow states and definitions
-- All PBI state transitions (8 transitions)
-- PBI history logging
-- Backlog document structure
-- PBI detail document structure
+- 3.1 Overview
+- 3.2 Backlog Document Structure
+- 3.3 PBI Workflow States
+- 3.4 PBI State Transitions (8 transitions)
+- 3.5 PBI History Logging
+- 3.6 PBI Detail Document Structure
 
-**Key workflows:** Creating PBI, Approving, Starting Implementation, Review, Completion
+**Use this section when:**
+- Creating a new PBI
+- Understanding PBI workflow states
+- Transitioning PBI through lifecycle
+- Setting up PBI documentation structure
 
 ---
 
-### Section 3: Task Management
-**File:** `./docs/sections/3-task-management.md`
-
-**When to reference:** Creating/managing tasks, task state transitions, daily work
+### [Section 3: Task Management](./sections/3-task-management.md)
+**Task creation, execution, and tracking workflows**
 
 **Contains:**
-- Task workflow states and definitions
-- All task state transitions (8 transitions)
-- Task status synchronization rules
-- Task concurrency limits
-- Task history logging
-- Version control for task completion
-- Task validation rules
+- 4.1 Overview
+- 4.2 Task Document Structure
+- 4.3 Task Workflow States
+- 4.4 Task State Transitions (8 transitions)
+- 4.5 Task Status Synchronization
+- 4.6 Task Concurrency Limit
+- 4.7 Task History Logging
+- 4.8 Task Validation Rules
+- 4.9 Version Control for Task Completion
+- 4.10 Task Index File Structure
 
-**Key workflows:** Approving task, Starting work, Submitting for review, Blocking/Unblocking
+**Use this section when:**
+- Creating or starting a task
+- Understanding task workflow
+- Synchronizing task status
+- Managing task concurrency
+- Setting up task documentation
 
 ---
 
-### Section 4: Testing Strategy
-**File:** `./docs/sections/4-testing-strategy.md`
-
-**When to reference:** Writing test plans, implementing tests, before marking tasks as Done
+### [Section 4: Testing Strategy](./sections/4-testing-strategy.md)
+**Testing principles, scoping, and documentation**
 
 **Contains:**
-- Testing principles (Risk-based, Test Pyramid)
-- Test scoping by type (Unit, Integration, E2E)
-- Test plan proportionality
-- PBI-level vs Task-level testing
-- E2E CoS test requirements
-- Test implementation guidelines
+- 5.1 Overview
+- 5.2 Testing Principles
+- 5.3 Test Scoping by Type (Unit, Integration, E2E)
+- 5.4 Test Plan Documentation Strategy
+- 5.5 Test Plan Requirements
+- 5.6 Test Distribution Strategy
+- 5.7 Test Implementation Guidelines
 
-**Key topics:** Mocking strategy, test plan detail levels, test distribution
+**Use this section when:**
+- Designing test plans
+- Determining appropriate test coverage
+- Understanding test pyramid strategy
+- Implementing unit, integration, or E2E tests
 
 ---
 
-### Section 5: Quick Reference
-**File:** `./docs/sections/5-quick-reference.md`
-
-**When to reference:** Daily workflow, checklists, common patterns, troubleshooting
+### [Section 5: Quick Reference](./sections/5-quick-reference.md)
+**Common patterns, workflows, checklists, and best practices**
 
 **Contains:**
-- Common workflow patterns (6 patterns)
-- Decision trees
-- Validation checklists
-- Common pitfalls to avoid
-- Best practices summary
-- Git commands and templates
+- Common Workflow Patterns (6 patterns)
+- Common Commands and Patterns
+- Decision Trees
+- Validation Checklists
+- Common Pitfalls to Avoid
+- Best Practices Summary
 
-**Key patterns:** Starting new PBI, Working on task, Handling blocked tasks, Creating documentation
+**Use this section when:**
+- Need quick guidance for common tasks
+- Making workflow decisions
+- Validating before actions
+- Troubleshooting common issues
 
 ---
 
-## 🚀 Quick Decision Guide for AI Agents
+## Quick Decision Guide for AI Agents
 
-### "What should I do right now?"
+### Before Starting Any Work
 
 ```
-1. Do I have a specific task to work on?
-   ├─ NO  → Wait for User to assign task or approve PBI
-   └─ YES → Continue to step 2
+1. Is there an associated PBI?
+   NO → Create PBI first
+   YES → Continue
 
-2. Is the task status "Agreed"?
-   ├─ NO  → Cannot start. Wait for User approval
-   └─ YES → Continue to step 3
+2. Is there an agreed task for this work?
+   NO → Create task and get approval
+   YES → Continue
 
-3. Does status match in task file AND index?
-   ├─ NO  → STOP. Report mismatch to User
-   └─ YES → Continue to step 4
+3. Is task status "Agreed" in BOTH locations?
+   NO → STOP and report mismatch
+   YES → Continue
 
 4. Are there other InProgress tasks for this PBI?
-   ├─ YES → STOP. Wait for them to complete
-   └─ NO  → Continue to step 5
+   YES → STOP, only one task InProgress allowed
+   NO → Continue
 
-5. All checks passed!
-   └─ Follow workflow in Section 3 (Task Management)
+5. ✅ Proceed with work
 ```
 
-### "Where do I find information about...?"
+### During Implementation
 
-| Topic | Section | File |
-|-------|---------|------|
-| Can I make this change? | 1 | `./docs/sections/1-fundamentals.md` |
-| How to create a PBI? | 2 | `./docs/sections/2-pbi-management.md` |
-| How to start a task? | 3 | `./docs/sections/3-task-management.md` |
-| What test plan do I need? | 4 | `./docs/sections/4-testing-strategy.md` |
-| Step-by-step workflow? | 5 | `./docs/sections/5-quick-reference.md` |
-| Validation checklist? | 5 | `./docs/sections/5-quick-reference.md` |
-| Common pitfalls? | 5 | `./docs/sections/5-quick-reference.md` |
+```
+1. Make ONLY changes within task scope
+2. Reference task ID in ALL commits
+3. Update documentation as you go
+4. Run tests continuously
+5. If scope expands → STOP, create new task
+```
 
----
+### Before Submitting for Review
 
-## ⚠️ Critical Rules (Never Violate)
-
-These rules are MANDATORY at all times:
-
-1. **NO code changes without an agreed task**
-   - Every change must be authorized
-   - If User requests change without task → discuss first
-
-2. **NO task creation without a PBI**
-   - All tasks must belong to a Product Backlog Item
-   - Orphaned tasks are prohibited
-
-3. **ALWAYS update both locations for status**
-   - Task file AND task index must match
-   - Update atomically in same commit
-
-4. **ONLY ONE InProgress task per PBI**
-   - Exception only with explicit User approval
-   - Document approval in history
-
-5. **NEVER create files without User confirmation**
-   - Only create files within defined structures
-   - Get explicit approval for standalone files
-
-6. **ALWAYS verify before acting**
-   - Check status matches in both locations
-   - Validate transitions are allowed
-   - Confirm no conflicts exist
+```
+1. All requirements implemented? ✅
+2. All tests passing? ✅
+3. Files modified documented? ✅
+4. Status updated in BOTH locations? ✅
+5. History logged? ✅
+```
 
 ---
 
-## 📖 How to Use This Documentation
+## Critical Rules Summary
 
-### For Initial Setup (First Time)
-1. Read this index file completely
-2. Read Section 1 (Fundamentals) - understand core principles
-3. Skim Section 5 (Quick Reference) - know what's available
-4. Reference Sections 2, 3, 4 as needed during work
+### Absolutely Mandatory
 
-### For Daily Work
-1. Use "Quick Decision Guide" above
-2. Reference specific sections when needed
-3. Use checklists from Section 5 before key actions
-4. Consult decision trees when uncertain
+1. ✅ **NO code changes** without agreed task
+2. ✅ **NO task creation** without associated PBI
+3. ✅ **ALWAYS** update task status in BOTH locations (file + index)
+4. ✅ **ONLY ONE** task InProgress per PBI at a time
+5. ✅ **ALL** status changes must be logged in history
+6. ✅ **NO** file creation without User confirmation
+7. ✅ **NO** scope creep - stay within task boundaries
 
-### For Troubleshooting
-1. Check Section 5 "Common Pitfalls"
-2. Use validation checklists
-3. Review relevant state transition rules
-4. Ask User if still unclear
+### When to STOP and Report to User
 
----
-
-## 📞 Getting Help
-
-**When uncertain:**
-- ✅ STOP work immediately
-- ✅ Consult relevant section
-- ✅ If still unclear, ASK User
-- ❌ NEVER assume or guess
-
-**When you find errors:**
-- ✅ Report to User with details
-- ✅ Provide recommended fix
-- ✅ Wait for User guidance
+- ❌ Status mismatch detected between file and index
+- ❌ Multiple InProgress tasks found for same PBI
+- ❌ Task not in "Agreed" state
+- ❌ Scope expanding beyond task definition
+- ❌ Tests failing
+- ❌ Dependencies unavailable (mark as Blocked)
 
 ---
 
-## 🔄 Document Updates
+## How to Use This Documentation
 
-This documentation is versioned and maintained. Always reference the most current version.
+### For AI Agents
 
-**Current Version:** 2.0
-**Major Changes in v2.0:**
-- Modularized structure for efficient token usage
-- Added quick decision guide
-- Enhanced reference system
-- Separated concerns into focused sections
+1. **Start with Section 1 (Fundamentals)** to understand core principles
+2. **Reference Section 2 (PBI Management)** when working with PBIs
+3. **Reference Section 3 (Task Management)** when working with tasks
+4. **Reference Section 4 (Testing Strategy)** when creating test plans
+5. **Use Section 5 (Quick Reference)** for day-to-day guidance
+
+### For Human Users
+
+1. **Review Section 1** to understand the system philosophy
+2. **Bookmark Section 5** for quick workflow references
+3. **Reference other sections** as needed for specific workflows
+
+### For Onboarding
+
+1. Read Section 1 completely
+2. Skim Section 2 and Section 3 for workflow overview
+3. Review Section 5 for practical examples
+4. Deep-dive into specific sections as needed
 
 ---
 
-**Next Step:** Start with [Section 1: Fundamentals](./docs/sections/1-fundamentals.md) to understand core principles.
+## Navigation
+
+- [Section 1: Fundamentals →](./sections/1-fundamentals.md)
+- [Section 2: PBI Management →](./sections/2-pbi-management.md)
+- [Section 3: Task Management →](./sections/3-task-management.md)
+- [Section 4: Testing Strategy →](./sections/4-testing-strategy.md)
+- [Section 5: Quick Reference →](./sections/5-quick-reference.md)
+
+---
+
+## Document History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0 | 2025-10-19 | Split into modular structure for easier navigation |
+| 1.0 | 2025-10-19 | Initial monolithic version |
+
+---
+
+**End of Index**
