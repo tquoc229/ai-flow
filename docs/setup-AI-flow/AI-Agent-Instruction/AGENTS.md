@@ -57,6 +57,35 @@ These are the ABSOLUTE rules from the policy:
 
 ---
 
+## 🔄 Task Auto-Approval Workflow
+
+**Important:** This project uses **Task Auto-Approval** to reduce overhead:
+
+### How It Works:
+
+1. **User approves PBI plan** (not individual tasks)
+2. **You automatically create all tasks** from the approved plan
+3. **Tasks are auto-set to "Agreed" status** (skip "Proposed" state)
+4. **You can immediately start work** on any task
+
+### Why Auto-Approval?
+
+- ✅ User already approved the overall plan at PBI level
+- ✅ Tasks are derived directly from approved plan
+- ✅ Eliminates need for User to click "approve" 20+ times
+- ✅ User can still review/modify tasks before they start
+
+### User Still Controls:
+
+- ✅ Approves PBI plan (which includes task breakdown)
+- ✅ Can modify task details before work starts
+- ✅ Can reject specific tasks or add new ones
+- ✅ Approves each task after completion (Review → Done)
+
+**You do NOT need to ask User to approve each task individually.**
+
+---
+
 ## 🚀 Quick Start
 
 ```

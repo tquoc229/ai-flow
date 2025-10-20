@@ -150,19 +150,23 @@ This policy is organized into **5 focused sections** plus this index:
    NO → Create PBI first
    YES → Continue
 
-2. Is there an agreed task for this work?
-   NO → Create task and get approval
+2. Is PBI plan approved?
+   NO → Create plan, get User approval first
    YES → Continue
 
-3. Is task status "Agreed" in BOTH locations?
+3. Are tasks created and auto-approved?
+   NO → Decompose plan into tasks (auto-set to "Agreed")
+   YES → Continue
+
+4. Is task status "Agreed" in BOTH locations?
    NO → STOP and report mismatch
    YES → Continue
 
-4. Are there other InProgress tasks for this PBI?
+5. Are there other InProgress tasks for this PBI?
    YES → STOP, only one task InProgress allowed
    NO → Continue
 
-5. ✅ Proceed with work
+6. ✅ Proceed with work
 ```
 
 ### During Implementation

@@ -141,32 +141,54 @@ estimated_hours: X
 
 ---
 
-#### Transition 1: Approving a Task
+#### Transition 1: Creating and Auto-Approving a Task
 
-**When:** User reviews proposed task and approves it for implementation
+**When:** AI_Agent decomposes PBI plan into tasks (after User approves PBI plan)
 
-**State Change:** `Proposed` → `Agreed`
+**State Change:** (none) → `Proposed` → `Agreed` (automatic)
 
-**Who Can Do This:** User only
+**Who Can Do This:** AI_Agent (automatic after PBI plan approval)
 
-**Before Approving:**
-- ✅ Task description is clear and complete
-- ✅ Task is properly prioritized in backlog
-- ✅ Task aligns with parent PBI goals
+**Context:**
+- This transition happens when PBI status moves to `ReadyForTasks` or `Agreed`
+- AI_Agent creates all task files and **automatically sets them to `Agreed`** status
+- This eliminates the need for User to approve each task individually
+- User has already approved the overall plan at PBI level
+
+**Before Creating Tasks:**
+- ✅ PBI plan is approved (PBI status: `ReadyForTasks` or `Agreed`)
+- ✅ Tasks decomposed from approved implementation plan
+- ✅ Each task represents atomic, implementable unit of work
 
 **AI_Agent MUST Do:**
 1. ✅ Create task documentation file named: `<PBI-ID>-<TASK-ID>.md`
 2. ✅ Add task entry to task index with link: `[description](<PBI-ID>-<TASK-ID>.md)`
-3. ✅ Populate all required sections in task file (Description, Requirements, etc.)
-4. ✅ Complete analysis and design work - document in Implementation Steps section
-5. ✅ Define test cases in Testing section appropriate to task complexity
-6. ✅ Update task status to `Agreed` in **BOTH** task file and index
-7. ✅ Add entries to task history:
+3. ✅ Populate all required sections in task file:
+   - Description (clear and specific)
+   - Requirements (from PBI breakdown)
+   - Implementation Steps (detailed, executable)
+   - Test Cases (appropriate to complexity)
+   - Files to Modify/Create
+4. ✅ Set task status to `Agreed` in **BOTH** task file and index (skip `Proposed` state)
+5. ✅ Add entries to task history:
    - First entry - Event_Type: "Created", From: N/A, To: Proposed
-   - Second entry - Event_Type: "Approved", From: Proposed, To: Agreed
-   - User: User name who approved
+   - Second entry - Event_Type: "Auto-Approved", From: Proposed, To: Agreed
+   - User: ai-agent
+   - Details: "Auto-approved as part of PBI plan approval"
 
-**Next Step:** Wait for User to approve starting work, or start if authorized
+**Rationale for Auto-Approval:**
+- User approved the PBI plan which includes task breakdown
+- Tasks are derived directly from approved plan
+- Reduces overhead - User doesn't need to click "approve" for each task
+- User can still modify/reject tasks before they start (Agreed → InProgress requires verification)
+
+**User Can Still:**
+- ✅ Review all created tasks
+- ✅ Modify task details before work starts
+- ✅ Reject specific tasks (mark as N/A or delete)
+- ✅ Add new tasks to the list
+
+**Next Step:** Tasks are ready to start - AI_Agent can begin Transition 2 (Starting Work)
 
 ---
 
