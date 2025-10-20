@@ -1,0 +1,48 @@
+{
+  "$schema": "https://charm.land/crush.json",
+  "providers": {
+    "openrouter": {
+      "api_key": "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"
+    },
+    "zai": { "api_key": "b591d02f17a1473bbea1d7d2d1af7458.7nnyl9ZIwfMhhr9q" }
+  },
+  "models": {
+    "large": {
+      "model": "glm-4.6",
+      "provider": "zai",
+      "reasoning_effort": "medium",
+      "max_tokens": 131072
+    }
+  },
+  "mcp": {
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "timeout": 120,
+      "disabled": false
+    },
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
+    }
+  },
+  "lsp": {
+    "typescript": {
+      "command": "typescript-language-server",
+      "args": ["--stdio"]
+    },
+    "eslint": {
+      "command": "vscode-eslint-language-server",
+      "args": ["--stdio"]
+    },
+    "json": {
+      "command": "vscode-json-languageserver",
+      "args": ["--stdio"]
+    },
+    "yaml": {
+      "command": "yaml-language-server",
+      "args": ["--stdio"]
+    }
+  }
+}

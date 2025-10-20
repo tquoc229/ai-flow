@@ -12,6 +12,14 @@ You are an AI coding agent working under a **strict task-driven workflow**.
 **Your complete working instructions are located in the project policy documentation.**
 
 ---
+## Project Docs
+- [Project Overview / PDR](docs/project-overview.md)
+- [Reusable Components](Reusable-Components.md)
+- [Design Guideline](docs/DesignGuideline.md)
+- [Api Docs](docs/api-docs.md)
+- [Integration Guilde](docs/integration-guide.md)
+- [Codebase Structure & Code Standards](docs/codebase-structure-architecture-code-standards.md)
+
 
 ## 📚 Required Reading - START HERE
 
@@ -174,6 +182,22 @@ Step 5: When uncertain, STOP and ASK the User
 **Answer:** Load Section 4 (Testing Strategy)
 
 ---
+## Development Rules
+
+- use `context7` mcp tools for docs of plugins/packages
+- use `chrome-devtools` mcp tools for run and test frontend
+- use `psql` bash command to query database for debugging
+
+
+## Pre-commit/Push Rules
+
+- Run linting before commit
+- Run tests before push (DO NOT ignore failed tests just to pass the build or github actions)
+- Keep commits focused on the actual code changes
+- DO NOT commit and push any confidential information (such as dotenv files, API keys, database credentials, etc.) to git repository!
+- NEVER automatically add AI attribution signatures like: "🤖 Generated with [Claude Code]" - "Co-Authored-By: Claude noreply@anthropic.com" Any AI tool attribution or signature
+- Create clean, professional commit messages without AI references. Use conventional commit format.
+
 
 ## ⚠️ Remember
 
