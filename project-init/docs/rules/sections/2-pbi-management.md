@@ -32,7 +32,7 @@
 
 | ID | Actor | User Story | Status | Conditions of Satisfaction (CoS) |
 |----|-------|------------|--------|----------------------------------|
-| 1  | User  | As a user... | Agreed | - Criterion 1<br>- Criterion 2 |
+| 1  | User  | As a user... | PlanInReview | - Criterion 1<br>- Criterion 2 |
 | 2  | Admin | As an admin... | InProgress | - Criterion A<br>- Criterion B |
 ```
 
@@ -50,9 +50,14 @@
 
 | State | Description | What It Means |
 |-------|-------------|---------------|
+| `Proposed` | New PBI idea | PBI mới được tạo (1-line user story). Chờ User duyệt ý tưởng. |
 | `PlanInReview` | Awaiting plan approval | AI_Agent đã phân tích và tạo file prd.md chi tiết. Chờ User duyệt kế hoạch này. |
-| `ReadyForTasks` | Plan approved | User đã duyệt file prd.md. AI_Agent được phép phân rã kế hoạch này thành Tasks. |
 | `NeedsPlanRework` | Plan rejected | User từ chối kế hoạch trong prd.md, yêu cầu AI làm lại. |
+| `ReadyForTasks` | Plan approved, ready to decompose | User đã duyệt file prd.md. AI_Agent sẽ phân rã kế hoạch này thành Tasks. |
+| `InProgress` | Implementation in progress | AI_Agent đã tạo tasks và đang thực hiện implementation. |
+| `InReview` | Ready for final review | Tất cả tasks đã Done. Chờ User review và approve toàn bộ PBI. |
+| `Done` | Completed and approved | PBI đã hoàn thành và được User chấp nhận. |
+| `Rejected` | Failed review, needs rework | PBI bị reject sau review. Cần fix và submit lại. |
 
 ---
 
@@ -61,15 +66,17 @@
 **Workflow Diagram:**
 
 ```
-    [Proposed]
-        ↓
-    [Agreed] ←──────────┐
-        ↓               │
-    [InProgress]        │
-        ↓               │
-    [InReview]          │
-        ↓               │
-    [Done]         [Rejected]
+         [Proposed]
+             ↓
+      [PlanInReview] ←─────────┐
+         ↓       ↓             │
+   [ReadyForTasks] [NeedsPlanRework]
+         ↓
+    [InProgress] ←──────────┐
+         ↓                  │
+     [InReview]             │
+         ↓                  │
+      [Done]           [Rejected]
 ```
 
 ---
@@ -92,14 +99,12 @@
 2. ✅ Document Conditions of Satisfaction (CoS) - what "done" means
 3. ✅ Assign unique PBI ID (use next sequential number)
 4. ✅ Add PBI entry to `backlog.md` with status `Proposed`
-5. ✅ Auto-approve Tasks: Tạo tất cả các file task chi tiết, điền đầy đủ `Implementation Steps` và `Test Cases`, và đặt status của chúng là `Agreed` (thay vì `Proposed`).
-6. ✅ Cập nhật PBI status thành `InProgress`
-7. ✅ Log in PBI history:
+5. ✅ Log in PBI history:
    - Action: "Created"
    - Details: Brief description of the PBI
    - User: Who created it
 
-**Next Step:** Wait for User to review and approve
+**Next Step:** Wait for User to approve the PBI idea (User will trigger by updating status)
 
 ---
 
@@ -112,59 +117,90 @@
 **Who Can Do This:** User (triggers), AI_Agent (executes)
 
 **Before (User):**
-* User sets 1-line PBI status from `Proposed` to `Agreed` in `backlog.md`. (This `Agreed` status is a temporary trigger).
+* User reviews the 1-line PBI in `backlog.md` and decides to approve it
+* User manually changes PBI status from `Proposed` to `PlanInReview` (this triggers AI to generate plan)
 
 **AI_Agent MUST Do:**
-1.  ✅ **Detect** PBI status changed to `Agreed`.
-2.  ✅ **(NEW) Perform Targeted Legacy Discovery:**
-    * **a. Generate Keywords:** Based on the PBI `User Story`, generate a list of relevant search keywords (e.g., "profile", "user", "functionName").
-    * **b. Execute Search:** Use code search tools (e.g., `ripgrep`, vector search) to find a *small set* of the **MOST RELEVANT** files or code chunks.
-    * **c. Read Context:** Read **ONLY** that small, relevant set of files. **DO NOT read the entire codebase.** This is critical to conserve tokens and prevent overload.
+1.  ✅ **Detect** PBI status changed to `PlanInReview`
+2.  ✅ **Perform Targeted Legacy Discovery:**
+    * **a. Generate Keywords:** Based on the PBI `User Story`, generate a list of relevant search keywords (e.g., "profile", "user", "functionName")
+    * **b. Execute Search:** Use code search tools (e.g., `ripgrep`, vector search) to find a *small set* of the **MOST RELEVANT** files or code chunks
+    * **c. Read Context:** Read **ONLY** that small, relevant set of files. **DO NOT read the entire codebase.** This is critical to conserve tokens and prevent overload
 3.  ✅ **Create directory:** `docs/delivery/<PBI-ID>/`
-4.  ✅ **Create PBI detail document:** `docs/delivery/<PBI-ID>/prd.md` using Template 2 (Section 3.6).
-5.  ✅ **Perform Analysis & Populate:** Auto-fill all sections in the `prd.md` file.
-    * **CRITICAL:** The `Legacy Discovery Findings` section **MUST** be populated based on the results from the *targeted* discovery (Step 2c).
-    * The high-level `Implementation Plan` must prioritize *modifying* legacy code over *creating* new code, based on these findings.
+4.  ✅ **Create PBI detail document:** `docs/delivery/<PBI-ID>/prd.md` using Template (Section 3.6)
+5.  ✅ **Perform Analysis & Populate:** Auto-fill all sections in the `prd.md` file
+    * **CRITICAL:** The `Legacy Discovery Findings` section **MUST** be populated based on the results from the *targeted* discovery (Step 2c)
+    * The high-level `Implementation Plan` must prioritize *modifying* legacy code over *creating* new code, based on these findings
 6.  ✅ **Set up bidirectional links:**
-    * In `backlog.md`: Update the 1-line PBI to link to the new `prd.md` file.
-    * In `prd.md`: Add a link back to `backlog.md`.
-7.  ✅ **Update PBI status to `PlanInReview`** in `backlog.md`.
-8.  ✅ **Log in PBI history:**
+    * In `backlog.md`: Update the 1-line PBI to link to the new `prd.md` file
+    * In `prd.md`: Add a link back to `backlog.md`
+7.  ✅ **Log in PBI history:**
     * Action: "Generated Plan for Review"
-    * Details: "AI performed *Targeted Discovery* and generated detailed PBI plan, awaiting User approval"
+    * Details: "AI performed Targeted Discovery and generated detailed PBI plan, awaiting User approval"
     * User: ai-agent
 
-**Next Step:** Wait for User to review the detailed plan in `prd.md`.
+**Next Step:** PBI remains in `PlanInReview` state. Wait for User to review the detailed plan in `prd.md` and either approve (→ `ReadyForTasks`) or reject (→ `NeedsPlanRework`)
 
 ---
 
 #### Transition 3: User Approves Plan / AI Decomposes Tasks
 
-**When**: User reviews and approves the detailed plan in prd.md.
+**When:** User reviews and approves the detailed plan in prd.md
 
-**State Change**: `PlanInReview` → `InProgress`
+**State Change:** `PlanInReview` → `ReadyForTasks` → `InProgress`
 
-**Who Can Do This**: User (triggers), AI_Agent (executes)
+**Who Can Do This:** User (triggers), AI_Agent (executes)
 
-**Before (User)**:
-- User reviews `prd.md`, thực hiện mọi chỉnh sửa cần thiết.
-- User sets PBI status from `PlanInReview` to `ReadyForTasks` in `backlog.md`. (This `ReadyForTasks` is a temporary trigger).
+**Before (User):**
 
-**AI_Agent MUST Do**:
+- User reviews `prd.md` and performs any necessary edits
+- User manually changes PBI status from `PlanInReview` to `ReadyForTasks` in `backlog.md` (this triggers AI to decompose tasks)
 
-1. ✅ **Detect** PBI status changed to `ReadyForTasks`.
-2. ✅ **Read** file `prd.md` đã được User phê duyệt.
-3. ✅ **Create task list file**: `docs/delivery/<PBI-ID>/tasks.md` (theo cấu trúc Mục 4.10).
-4. ✅ **Decompose Plan**: Đọc `Implementation Plan` cấp cao (từ `prd.md`) và phân rã nó thành các Task chi tiết.
-5. ✅ **Create ALL Task Files**: Tạo tất cả các file task chi tiết (ví dụ: `<PBI-ID>-1.md`, `<PBI-ID>-2.md`...) theo (Mục 4.2).
-6. ✅ **Set all new tasks to** `Proposed` (sẵn sàng cho User duyệt từng task).
-7. ✅ **Update PBI status to** `InProgress` trong `backlog.md` (báo hiệu PBI đã chính thức bắt đầu được triển khai).
-8. ✅ **Log in PBI history**:
- - Action: "Plan Approved, Tasks Decomposed"
- - Details: "User approved plan. AI decomposed into [X] tasks."
- - User: ai-agent
+**AI_Agent MUST Do:**
 
-Next Step: Workflow Task Management (Mục 4) bắt đầu. User duyệt (approve) Task đầu tiên (`Proposed` -> `Agreed`) để AI bắt đầu code.
+1. ✅ **Detect** PBI status changed to `ReadyForTasks`
+2. ✅ **Read** the approved `prd.md` file
+3. ✅ **Create task list file:** `docs/delivery/<PBI-ID>/tasks.md` (see Section 4.10 for structure)
+4. ✅ **Decompose Plan:** Read the high-level `Implementation Plan` from `prd.md` and break it down into detailed Tasks
+5. ✅ **Create ALL Task Files:** Create all detailed task files (e.g., `<PBI-ID>-1.md`, `<PBI-ID>-2.md`, etc.) following Section 4.2 template
+6. ✅ **Set all new tasks to** `Proposed` (ready for User to review and approve each task)
+7. ✅ **Update PBI status to** `InProgress` in `backlog.md` (signals PBI implementation has officially started)
+8. ✅ **Log in PBI history:**
+   - Action: "Plan Approved, Tasks Decomposed"
+   - Details: "User approved plan. AI decomposed into [X] tasks"
+   - User: ai-agent
+
+**Next Step:** Task Management workflow (Section 4) begins. User approves first Task (`Proposed` → `Agreed`) for AI to start coding
+
+---
+
+#### Transition 3b: User Rejects Plan / AI Reworks Plan
+
+**When:** User reviews plan in prd.md and finds it needs significant changes
+
+**State Change:** `PlanInReview` → `NeedsPlanRework`
+
+**Who Can Do This:** User (triggers), AI_Agent (executes)
+
+**Before (User):**
+
+- User reviews `prd.md` and identifies issues with the plan
+- User provides specific feedback on what needs to be changed
+- User manually changes PBI status from `PlanInReview` to `NeedsPlanRework` in `backlog.md`
+
+**AI_Agent MUST Do:**
+
+1. ✅ **Detect** PBI status changed to `NeedsPlanRework`
+2. ✅ **Read User feedback** from comments or updated requirements
+3. ✅ **Revise the plan:** Update `prd.md` based on User feedback
+4. ✅ **Re-perform Targeted Discovery** if needed (if scope or approach changed significantly)
+5. ✅ **Update PBI status back to** `PlanInReview` in `backlog.md`
+6. ✅ **Log in PBI history:**
+   - Action: "Plan Reworked"
+   - Details: "AI revised plan based on User feedback"
+   - User: ai-agent
+
+**Next Step:** PBI goes back to `PlanInReview` state. Wait for User to review the updated plan again
 
 ---
 
@@ -257,23 +293,26 @@ Next Step: Workflow Task Management (Mục 4) bắt đầu. User duyệt (approv
 
 **State Change:** `Rejected` → `InProgress`
 
-**Who Can Do This:** User or AI_Agent (after User approval)
+**Who Can Do This:** User (triggers), AI_Agent (executes)
 
-**Before Reopening:**
-- ✅ All rejection feedback has been addressed
-- ✅ User approves resuming work
+**Before (User):**
+
+- User reviews rejection feedback
+- User decides to reopen the PBI for fixes
+- User manually changes PBI status from `Rejected` to `InProgress` in `backlog.md`
 
 **AI_Agent MUST Do:**
-1. ✅ Create new tasks for required changes (if needed)
-2. ✅ Update PBI detail document with changes made
-3. ✅ Update PBI status to `InProgress` in backlog
-4. ✅ Log in PBI history:
-   - Action: "Reopened"
-   - Details: What was fixed, what tasks created
-   - User: Who authorized reopening
-5. ✅ Notify team that work has resumed
 
-**Next Step:** Complete remaining work and resubmit for review
+1. ✅ **Detect** PBI status changed back to `InProgress`
+2. ✅ **Read rejection feedback** and understand what needs to be fixed
+3. ✅ **Create new tasks** for required changes (if needed)
+4. ✅ **Update PBI detail document** with changes made or planned changes
+5. ✅ **Log in PBI history:**
+   - Action: "Reopened"
+   - Details: "PBI reopened to address rejection feedback. Created [X] new tasks"
+   - User: ai-agent
+
+**Next Step:** Complete fixes and resubmit for review (return to Transition 4)
 
 ---
 
@@ -281,25 +320,28 @@ Next Step: Workflow Task Management (Mục 4) bắt đầu. User duyệt (approv
 
 **When:** PBI needs to be postponed or moved down in priority
 
-**State Change:** `ReadyForTasks` or `InProgress` → `Proposed`
+**State Change:** Any active state (`PlanInReview`, `NeedsPlanRework`, `ReadyForTasks`, `InProgress`) → `Proposed`
 
 **Who Can Do This:** User only
 
-**Before Deprioritizing:**
-- User has decided this work should be postponed
+**Before (User):**
+
+- User decides this work should be postponed
+- User provides reason for deprioritization
+- User manually changes PBI status to `Proposed` in `backlog.md`
 
 **AI_Agent MUST Do:**
-1. ✅ Document reason for deprioritization (from User)
-2. ✅ Pause any in-progress tasks (update their status to document the pause)
-3. ✅ Move PBI to lower priority in backlog (reorder if needed)
-4. ✅ Update PBI status to `Proposed` in backlog
-5. ✅ Log in PBI history:
-   - Action: "Deprioritized"
-   - Details: Reason for deprioritization
-   - User: User name who deprioritized
-6. ✅ Notify stakeholders of priority change
 
-**Next Step:** PBI goes back to Proposed state, can be re-approved later
+1. ✅ **Detect** PBI status changed to `Proposed` from an active state
+2. ✅ **Document reason** for deprioritization (from User comments)
+3. ✅ **Pause any in-progress tasks** (update their status to `Paused` or similar to document the pause)
+4. ✅ **Move PBI to lower priority** in backlog (reorder if needed)
+5. ✅ **Log in PBI history:**
+   - Action: "Deprioritized"
+   - Details: "Reason for deprioritization: [User's reason]"
+   - User: User name who deprioritized
+
+**Next Step:** PBI goes back to `Proposed` state, can be re-approved later (return to Transition 2)
 
 ---
 
@@ -326,11 +368,13 @@ Use **plain language** that describes what you did:
 | When you... | Log this Action |
 |-------------|-----------------|
 | Create a new PBI | "Created" |
-| Approve PBI for backlog | "Approved for Backlog" |
-| Start implementing | "Started Implementation" |
+| Generate plan for approval | "Generated Plan for Review" |
+| Plan needs rework | "Plan Reworked" |
+| Plan approved, tasks decomposed | "Plan Approved, Tasks Decomposed" |
+| Start implementing tasks | "Started Implementation" |
 | Submit for review | "Submitted for Review" |
 | Approve completed PBI | "Approved" |
-| Reject PBI | "Rejected" |
+| Reject PBI after review | "Rejected" |
 | Reopen after rejection | "Reopened" |
 | Lower priority | "Deprioritized" |
 
@@ -342,8 +386,9 @@ Use **plain language** that describes what you did:
 | Timestamp | PBI_ID | Action | Details | User |
 |-----------|--------|--------|---------|------|
 | 2025-10-19 14:30:00 | PBI-1 | Created | Initial creation of user authentication PBI | Julian |
-| 2025-10-19 15:00:00 | PBI-1 | Approved for Backlog | Approved by Product Owner, aligned with PRD section 3 | Julian |
-| 2025-10-20 09:15:00 | PBI-1 | Started Implementation | Created 5 tasks, began work on task 1-1 | ai-agent |
+| 2025-10-19 15:00:00 | PBI-1 | Generated Plan for Review | AI performed Targeted Discovery and created detailed plan in prd.md | ai-agent |
+| 2025-10-19 16:00:00 | PBI-1 | Plan Approved, Tasks Decomposed | User approved plan. AI decomposed into 5 tasks | ai-agent |
+| 2025-10-20 09:15:00 | PBI-1 | Started Implementation | Working on task 1-1 | ai-agent |
 | 2025-10-22 16:45:00 | PBI-1 | Submitted for Review | All 5 tasks completed, tests passing | ai-agent |
 | 2025-10-23 10:30:00 | PBI-1 | Approved | All CoS verified and accepted, merged to main | Julian |
 ```
@@ -356,13 +401,13 @@ Use **plain language** that describes what you did:
 | Timestamp | PBI_ID | Action | Details | User |
 |-----------|--------|--------|---------|------|
 | 2025-10-19 10:00:00 | PBI-2 | Created | Email notification system proposal | Julian |
-| 2025-10-19 10:30:00 | PBI-2 | Approved for Backlog | High priority feature for Q4 | Julian |
-| 2025-10-20 14:00:00 | PBI-2 | Started Implementation | Created 3 tasks for email service | ai-agent |
-| 2025-10-21 09:00:00 | PBI-2 | Blocked | Waiting for email service API credentials | ai-agent |
-| 2025-10-22 11:00:00 | PBI-2 | Unblocked | Credentials received, resuming work | Julian |
+| 2025-10-19 10:30:00 | PBI-2 | Generated Plan for Review | AI created initial plan for email notification system | ai-agent |
+| 2025-10-19 11:00:00 | PBI-2 | Plan Reworked | User requested changes to architecture approach | ai-agent |
+| 2025-10-19 14:00:00 | PBI-2 | Plan Approved, Tasks Decomposed | User approved revised plan. AI decomposed into 3 tasks | ai-agent |
+| 2025-10-20 14:00:00 | PBI-2 | Started Implementation | Working on email service integration | ai-agent |
 | 2025-10-24 15:00:00 | PBI-2 | Submitted for Review | Implementation complete, ready for testing | ai-agent |
 | 2025-10-25 10:00:00 | PBI-2 | Rejected | Email templates need redesign per UX feedback | Julian |
-| 2025-10-25 11:00:00 | PBI-2 | Reopened | Created new task 2-4 for template redesign | ai-agent |
+| 2025-10-25 11:00:00 | PBI-2 | Reopened | PBI reopened to address rejection feedback. Created 1 new tasks | ai-agent |
 | 2025-10-26 16:00:00 | PBI-2 | Submitted for Review | Templates redesigned and approved | ai-agent |
 | 2025-10-27 09:30:00 | PBI-2 | Approved | Feature complete and deployed | Julian |
 ```
@@ -382,7 +427,6 @@ Use **plain language** that describes what you did:
 
 ```markdown
 ---
-type: feature
 status: todo
 priority: medium
 created: YYYY-MM-DD
@@ -390,11 +434,11 @@ updated: YYYY-MM-DD
 estimated_hours: X
 ---
 
-# Feature: [Feature Name]
+# [PBI Title/Name]
 
 ## Context
 
-**Why do we need this feature?**
+**Why do we need this?**
 [Explain the problem or opportunity]
 
 **Current Situation:**
@@ -530,11 +574,11 @@ Then [expected outcome]
 
 **From backlog to PBI detail:**
 ```markdown
-| 1 | User | As a user... | Agreed | [View Details](1/prd.md) |
+| 1 | User | As a user... | PlanInReview | [View Details](1/prd.md) |
 ```
 
 **Creation and Ownership:**
-- ✅ Created automatically when PBI moves from `Proposed` → `Agreed`
+- ✅ Created automatically when PBI moves from `Proposed` → `PlanInReview`
 - ✅ Maintained by implementing team member
 - ✅ Reviewed during PBI review process
 - ✅ Updated throughout PBI lifecycle

@@ -168,7 +168,6 @@ Step 5: Unblock Task (Blocked → InProgress)
 
 ```markdown
 ---
-type: task
 priority: medium
 created: YYYY-MM-DD
 updated: YYYY-MM-DD

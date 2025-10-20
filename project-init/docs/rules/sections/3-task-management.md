@@ -37,7 +37,6 @@
 
 ```markdown
 ---
-type: task
 priority: medium
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
