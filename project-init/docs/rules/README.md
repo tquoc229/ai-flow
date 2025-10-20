@@ -33,7 +33,7 @@ docs/rules/
 
 Before working on this project, read the system instructions:
 
-**System Instructions:** `docs/setup-AI-flow/AI-Agent-Instruction/AGENTS.md`
+**System Instructions:** `AGENTS.md`
 
 This file provides:
 - Primary directive and role definition
