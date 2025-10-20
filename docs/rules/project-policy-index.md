@@ -1,7 +1,7 @@
 # AI Coding Agent Project Policy - Index
 
-**Version:** 2.0 (Modular)
-**Last Updated:** 2025-10-19
+**Version:** 2.1 (Modular)
+**Last Updated:** 2025-10-20
 **Applies To:** All AI coding agents and Vietnamese software engineers
 
 ---
@@ -23,9 +23,10 @@ This is the **modular version** of the AI Coding Agent Project Policy, split int
 - User is the **sole decider** for scope and design
 - User retains responsibility for all code changes (even if AI implements)
 
-### Status Synchronization
-- Status in task files **MUST** match status in index files
-- Update **BOTH** locations immediately on status change
+### Task Status Management (Single Source of Truth)
+- Task detail file is the **authoritative source** for status
+- Task index (`tasks.md`) is **auto-generated** via pre-commit hook
+- Update status ONLY in task file - index regenerates automatically
 
 ### Prohibited Actions
 - **NO** changes outside explicit task scope
@@ -86,17 +87,19 @@ This policy is organized into **5 focused sections** plus this index:
 - 4.2 Task Document Structure
 - 4.3 Task Workflow States
 - 4.4 Task State Transitions (8 transitions)
-- 4.5 Task Status Synchronization
+- 4.5 Task Status Management (Single Source of Truth) ✨ **NEW**
 - 4.6 Task Concurrency Limit
 - 4.7 Task History Logging
 - 4.8 Task Validation Rules
-- 4.9 Version Control for Task Completion
-- 4.10 Task Index File Structure
+- 4.9 Task Obsolescence Criteria ✨ **NEW**
+- 4.10 Version Control for Task Completion
+- 4.11 Task Index File Structure
 
 **Use this section when:**
 - Creating or starting a task
 - Understanding task workflow
-- Synchronizing task status
+- Managing task status (now automated!)
+- Identifying obsolete tasks
 - Managing task concurrency
 - Setting up task documentation
 
@@ -113,12 +116,14 @@ This policy is organized into **5 focused sections** plus this index:
 - 5.5 Test Plan Requirements
 - 5.6 Test Distribution Strategy
 - 5.7 Test Implementation Guidelines
+- 5.8 Test Failure Protocol (Autonomous Recovery) ✨ **NEW**
 
 **Use this section when:**
 - Designing test plans
 - Determining appropriate test coverage
 - Understanding test pyramid strategy
 - Implementing unit, integration, or E2E tests
+- Handling test failures autonomously
 
 ---
 
@@ -158,8 +163,8 @@ This policy is organized into **5 focused sections** plus this index:
    NO → Decompose plan into tasks (auto-set to "Agreed")
    YES → Continue
 
-4. Is task status "Agreed" in BOTH locations?
-   NO → STOP and report mismatch
+4. Is task status "Agreed" in task file?
+   NO → STOP and report issue
    YES → Continue
 
 5. Are there other InProgress tasks for this PBI?
@@ -185,8 +190,9 @@ This policy is organized into **5 focused sections** plus this index:
 1. All requirements implemented? ✅
 2. All tests passing? ✅
 3. Files modified documented? ✅
-4. Status updated in BOTH locations? ✅
+4. Status updated in task file? ✅
 5. History logged? ✅
+6. Committed task file (index auto-generates)? ✅
 ```
 
 ---
@@ -197,19 +203,20 @@ This policy is organized into **5 focused sections** plus this index:
 
 1. ✅ **NO code changes** without agreed task
 2. ✅ **NO task creation** without associated PBI
-3. ✅ **ALWAYS** update task status in BOTH locations (file + index)
+3. ✅ **ALWAYS** update task status in task file (index auto-generated)
 4. ✅ **ONLY ONE** task InProgress per PBI at a time
 5. ✅ **ALL** status changes must be logged in history
 6. ✅ **NO** file creation without User confirmation
 7. ✅ **NO** scope creep - stay within task boundaries
+8. ✅ **EVALUATE** remaining tasks for obsolescence after each completion
 
 ### When to STOP and Report to User
 
-- ❌ Status mismatch detected between file and index
 - ❌ Multiple InProgress tasks found for same PBI
 - ❌ Task not in "Agreed" state
 - ❌ Scope expanding beyond task definition
-- ❌ Tests failing
+- ❌ Tests failing (use Test Failure Protocol - see Section 4)
+- ❌ Test expectation mismatch (escalate immediately)
 - ❌ Dependencies unavailable (mark as Blocked)
 
 ---
@@ -253,6 +260,7 @@ This policy is organized into **5 focused sections** plus this index:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.1 | 2025-10-20 | Added 3 major improvements: Single Source of Truth for task status, Test Failure Protocol, Task Obsolescence Criteria |
 | 2.0 | 2025-10-19 | Split into modular structure for easier navigation |
 | 1.0 | 2025-10-19 | Initial monolithic version |
 

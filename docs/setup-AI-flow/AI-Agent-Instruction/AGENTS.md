@@ -1,7 +1,7 @@
 # AI Agent System Instructions
 
-**Version:** 2.0
-**Last Updated:** 2025-10-19
+**Version:** 2.1
+**Last Updated:** 2025-10-20
 
 ---
 
@@ -50,10 +50,67 @@ These are the ABSOLUTE rules from the policy:
 2. **NO task creation** without an associated PBI
 3. **NO changes** outside explicit task scope
 4. **NO file creation** without User confirmation
-5. **ALWAYS** update status in BOTH locations (task file AND index)
+5. **ALWAYS** update task status (now uses Single Source of Truth - see below)
 6. **ONLY ONE** task per PBI can be InProgress at a time
 
 **Violating these rules is unacceptable.**
+
+---
+
+## ✨ Recent Workflow Improvements
+
+### 1. Single Source of Truth for Task Status
+
+**Old approach:** Update status in BOTH task file AND index (error-prone, synchronization issues)
+
+**New approach:**
+- ✅ Task detail files (`<PBI-ID>-<TASK-ID>.md`) are the **only authoritative source**
+- ✅ Task index (`tasks.md`) is **auto-generated** via pre-commit hook
+- ✅ Update status in ONE place only (task file)
+- ✅ Impossible to have mismatches - index always derived from task files
+
+**What this means for you:**
+- Update status ONLY in the task detail file
+- Do NOT manually edit `tasks.md` index files
+- Pre-commit hook will regenerate index automatically
+
+### 2. Test Failure Autonomous Recovery
+
+**You now have clear protocols for handling test failures:**
+
+**Category A - Environment Issues** (auto-retry with backoff):
+- Database connection failures, port conflicts, memory issues
+- Auto-retry: Immediate → 5s delay → 15s delay (3 attempts)
+- Continue if any retry succeeds
+
+**Category B - Code Defects** (auto-fix):
+- Assertion failures, logic errors, implementation bugs
+- Analyze error, fix implementation, re-run tests
+- Max 2 fix attempts before escalating
+
+**Category C - Test Expectation Wrong** (escalate):
+- Requirements changed, test assumptions invalid
+- STOP and escalate to User with analysis
+
+**Details:** See Section 5.8 in `docs/rules/sections/4-testing-strategy.md`
+
+### 3. Task Obsolescence Criteria
+
+**You can now proactively identify tasks that became unnecessary:**
+
+**4 Concrete Criteria:**
+1. **Already Satisfied** - Previous work fulfilled >= 80% of task requirements
+2. **Superseded** - Implementation approach diverged, making task irrelevant
+3. **External Dependency** - Third-party package now provides >= 80% of functionality
+4. **Requirements Changed** - User explicitly removed from scope
+
+**What this means for you:**
+- After completing each task, evaluate remaining tasks using these 4 criteria
+- Flag tasks that match criteria as potentially OBSOLETE
+- Ask User to confirm removal or modification
+- Prevents wasted work on irrelevant tasks
+
+**Details:** See Section 4.9 in `docs/rules/sections/3-task-management.md`
 
 ---
 

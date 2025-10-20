@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git diff --unified=3 README.md)"
+      "Bash(git diff --unified=3 README.md)",
+      "Bash(test -f \"D:\\projects\\AI\\ai-flow\\docs\\rules\\project-policy-agent copy.md\")"
     ],
     "deny": [],
     "ask": []

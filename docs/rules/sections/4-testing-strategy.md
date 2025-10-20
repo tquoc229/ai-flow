@@ -771,6 +771,318 @@ describe('UserService', () => {
 
 ---
 
+### 5.8 Test Failure Protocol
+
+**✨ NEW:** Comprehensive protocol for AI agents to handle test failures autonomously where possible.
+
+---
+
+#### Decision Tree: Test Failure Diagnosis
+
+```
+Tests failed during task execution
+    ↓
+Step 1: Identify failure type
+    ↓
+┌───────────────────────────────────────────────────────────┐
+│ A. Environment/Infrastructure Issue                        │
+│    - Database connection failed                           │
+│    - Port already in use                                  │
+│    - External service unreachable                         │
+│    - Memory/resource exhaustion                           │
+│    - Network timeout                                      │
+└───────────────────────────────────────────────────────────┘
+    ↓ YES → GO TO: Auto-Retry Protocol (below)
+    ↓ NO → Continue to Step 2
+
+┌───────────────────────────────────────────────────────────┐
+│ B. Code Defect (Logic Error)                             │
+│    - Assertion failed due to incorrect logic             │
+│    - Unexpected return value                             │
+│    - Exception thrown in implementation                  │
+│    - Business logic violation                            │
+└───────────────────────────────────────────────────────────┘
+    ↓ YES → GO TO: Fix Implementation (below)
+    ↓ NO → Continue to Step 3
+
+┌───────────────────────────────────────────────────────────┐
+│ C. Test Expectation Wrong                                │
+│    - Test expects behavior that changed                  │
+│    - Requirements evolved since test written             │
+│    - Test assumptions no longer valid                    │
+│    - Hardcoded test data out of sync                     │
+└───────────────────────────────────────────────────────────┘
+    ↓ YES → GO TO: Escalate to User (below)
+```
+
+---
+
+#### Auto-Retry Protocol (Environment Issues)
+
+**When:** Test failed due to environmental/infrastructure issue
+
+**AI_Agent Actions:**
+
+```markdown
+1. **Identify Root Cause:**
+   - Parse test output for error patterns
+   - Check: Database down? Port conflict? Network issue?
+
+2. **Execute Auto-Retry with Backoff:**
+
+   Attempt 1: Immediate retry
+   ↓
+   SUCCESS? → Continue to submission
+   FAIL? → Wait 5 seconds, retry
+   ↓
+   Attempt 2: After 5s delay
+   ↓
+   SUCCESS? → Continue to submission
+   FAIL? → Wait 15 seconds, retry
+   ↓
+   Attempt 3: After 15s delay
+   ↓
+   SUCCESS? → Continue, log warning in task
+   FAIL? → GO TO: Block Task (below)
+
+3. **Log All Retry Attempts:**
+   ```
+   Test failures encountered:
+   - Attempt 1 (10:00:00): DB connection timeout
+   - Attempt 2 (10:00:05): DB connection timeout
+   - Attempt 3 (10:00:20): Tests passed ✓
+   ```
+
+4. **If All Retries Fail:**
+   - Update task status to Blocked
+   - Create blocker document
+   - Notify User
+```
+
+**Blocker Document Template:**
+
+```markdown
+## Task Blocked: Test Environment Issue
+
+**Task:** <Task-ID>
+**Blocked At:** <Timestamp>
+**Issue Type:** Test Environment
+
+**Problem:**
+Tests consistently failing due to: <specific issue>
+
+**Evidence:**
+- Attempt 1: <error message>
+- Attempt 2: <error message>
+- Attempt 3: <error message>
+
+**Root Cause Analysis:**
+<AI analysis of what's wrong>
+
+**Recommended Action:**
+- [ ] Fix test database configuration
+- [ ] Restart test services
+- [ ] Check infrastructure logs
+- [ ] <specific recommendation>
+
+**Impact:**
+Cannot proceed with task <ID> until environment stable.
+```
+
+---
+
+#### Fix Implementation Protocol (Code Defects)
+
+**When:** Test failed due to incorrect implementation logic
+
+**AI_Agent Actions:**
+
+```markdown
+1. **Analyze Failure:**
+   - Which test failed?
+   - What was expected vs actual?
+   - What business logic is violated?
+
+2. **Identify Fix Location:**
+   - Which function/method needs correction?
+   - Is this a new bug or regression?
+   - Does fix affect other tests?
+
+3. **Implement Fix:**
+   - Modify implementation code
+   - Follow same coding standards
+   - Add code comments if logic complex
+
+4. **Re-run ALL Tests:**
+   - Not just the failed test
+   - Ensure fix didn't break other functionality
+   - Verify integration tests still pass
+
+5. **Document in Task:**
+   ```markdown
+   ## Implementation Issues Discovered
+
+   **Issue:** Tests failed for calculateDiscount function
+   **Root Cause:** Did not handle edge case for exactly $100 order
+   **Fix Applied:** Updated condition from > to >= in line 42
+   **Verification:** All 15 tests passing
+   ```
+
+6. **If Fix Successful:**
+   - Continue to task submission
+   - Log issue in task history
+
+7. **If Fix Unsuccessful After 3 Attempts:**
+   - Mark task Blocked
+   - Escalate to User
+   - Document what was attempted
+```
+
+---
+
+#### Escalate to User Protocol (Test Expectation Issues)
+
+**When:**
+- Test expectation appears wrong (not implementation)
+- Requirements may have changed
+- AI uncertain if test or code is correct
+
+**AI_Agent Actions:**
+
+```markdown
+1. **Document Discrepancy:**
+
+   **Test Expectation Issue Detected**
+
+   Test: test/user-service.spec.ts:42
+   Failure: Expected user.role to be 'admin', got 'user'
+
+   **Possible Reasons:**
+   A. Implementation is wrong (role should be 'admin')
+   B. Test is wrong (role should be 'user')
+   C. Requirements changed since test written
+
+2. **Provide Context:**
+
+   **Implementation Logic:**
+   ```typescript
+   function createUser(data) {
+     return { ...data, role: 'user' }; // Default role
+   }
+   ```
+
+   **Test Expectation:**
+   ```typescript
+   expect(createUser({}).role).toBe('admin');
+   ```
+
+   **Question:** Should default role be 'user' or 'admin'?
+
+3. **Mark Task as Blocked:**
+   - Status: Blocked
+   - Blocker Type: Test Expectation Clarification Needed
+   - Waiting For: User decision on correct behavior
+
+4. **Notify User:**
+   Subject: Task <ID> - Test Expectation Clarification Needed
+
+   "Test failure in <test name>. Implementation produces X,
+    test expects Y. Please confirm correct behavior:
+
+    Option A: Change implementation to match test
+    Option B: Update test to match implementation
+    Option C: Other (please specify)
+
+    Details: <link to blocker document>"
+
+5. **Wait for User Decision:**
+   - Do not modify test or code without approval
+   - User will unblock task with guidance
+```
+
+---
+
+#### Common Environment Issues & Auto-Fixes
+
+**AI_Agent can auto-fix these common issues:**
+
+| Issue | Detection | Auto-Fix | Max Retries |
+|-------|-----------|----------|-------------|
+| **Database connection timeout** | Error: "ECONNREFUSED" | Restart test DB, retry | 3 |
+| **Port already in use** | Error: "EADDRINUSE" | Kill process on port, retry | 2 |
+| **Memory exhaustion** | Error: "JavaScript heap out of memory" | Increase heap size, retry | 1 |
+| **Flaky network test** | Timeout on HTTP request | Retry with longer timeout | 3 |
+| **File lock conflict** | Error: "EBUSY" | Wait 2s for release, retry | 3 |
+| **Race condition** | Intermittent pass/fail | Add small delay, retry | 2 |
+
+**Auto-Fix Script Example:**
+
+```bash
+# Port conflict auto-fix
+if [[ $ERROR == *"EADDRINUSE"* ]]; then
+  PORT=$(echo $ERROR | grep -oP ':\K\d+')
+  lsof -ti:$PORT | xargs kill -9
+  sleep 1
+  npm test
+fi
+```
+
+---
+
+#### Test Failure Metrics (AI Tracking)
+
+**AI_Agent should log these metrics:**
+
+```markdown
+## Test Failure Statistics
+
+**Month:** October 2025
+
+| Failure Type | Count | Auto-Recovered | Escalated | Avg Recovery Time |
+|--------------|-------|----------------|-----------|-------------------|
+| Environment  | 15    | 12 (80%)      | 3 (20%)  | 12 seconds       |
+| Code Defect  | 8     | 8 (100%)      | 0 (0%)   | 45 minutes       |
+| Test Expectation | 3 | 0 (0%)        | 3 (100%) | N/A              |
+
+**Insights:**
+- Most common: Database connection timeouts (8 occurrences)
+- Auto-retry success rate: 80%
+- Code defect fix success rate: 100%
+- Average time from failure to recovery: 8 minutes
+```
+
+---
+
+#### Summary: AI Agent Decision Flow
+
+```
+Test Failed
+    ↓
+Environment issue?
+    YES → Auto-retry (max 3) → Success? YES → Continue
+                              → Success? NO → Block & Notify
+    ↓
+    NO → Code defect?
+        YES → Fix code → Re-run all tests → Pass? YES → Continue
+                                           → Pass? NO → Try 2 more times
+                                           → Still fail? Block & Notify
+        ↓
+        NO → Test expectation issue?
+            YES → Document discrepancy → Block → Notify User
+            ↓
+            NO → Unknown issue → Block → Escalate with full context
+```
+
+**Key Principles:**
+- ✅ Autonomous recovery for environmental issues
+- ✅ Autonomous fix for clear code defects
+- ✅ Always escalate when uncertain
+- ✅ Never modify tests without User approval
+- ✅ Log everything for debugging
+- ✅ Track metrics to improve process
+
+---
+
 ## Navigation
 
 - [← Back to Index](../project-policy-index.md)
