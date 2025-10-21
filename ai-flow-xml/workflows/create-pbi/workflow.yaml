@@ -217,9 +217,9 @@ related_workflows:
     use_when: "User reviews and approves PRD plan"
 
   - name: "decompose-tasks"
-    path: "{project-root}/workflows/decompose-tasks.yaml"
+    path: "{project-root}/workflows/decompose-tasks/workflow.yaml"
     use_when: "Break down approved PBI into tasks"
 
   - name: "execute-task"
-    path: "{project-root}/workflows/execute-task.yaml"
+    path: "{project-root}/workflows/execute-task/workflow.yaml"
     use_when: "Implement individual tasks"

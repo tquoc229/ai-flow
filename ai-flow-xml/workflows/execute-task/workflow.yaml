@@ -340,15 +340,15 @@ metadata:
 # ========================================
 related_workflows:
   - name: "transition-task"
-    path: "workflows/transition-task.yaml"
+    path: "workflows/transition-task/workflow.yaml"
     use_when: "Need to change task state without full execution"
 
   - name: "create-pbi"
-    path: "workflows/create-pbi.yaml"
+    path: "workflows/create-pbi/workflow.yaml"
     use_when: "Need to create a new PBI"
 
   - name: "generate-tasks"
-    path: "workflows/generate-tasks.yaml"
+    path: "workflows/generate-tasks/workflow.yaml"
     use_when: "Need to break down PBI into tasks"
 
 # ========================================
