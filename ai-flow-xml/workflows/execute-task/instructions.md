@@ -50,19 +50,27 @@ Example: docs/delivery/14/14-1.md
 <action>2. Configuration: {project-root}/ai-flow-config.yaml</action>
 <action>3. Policy index: {project-root}/docs/rules/project-policy-index.md</action>
 <action>4. Task management rules: {project-root}/docs/rules/sections/3-task-management.md</action>
-<action>5. Task file: {task_path}</action>
-<action>6. Parent PBI: {output_folder}/{pbi_id}/prd.md</action>
-<action>7. Task index: {output_folder}/{pbi_id}/tasks.md</action>
+<action>5. Task template structure: {project-root}/workflows/decompose-tasks/TASK_TEMPLATE.md</action>
+<critical>TASK_TEMPLATE.md shows you HOW to parse task files correctly</critical>
+<critical>It defines YAML frontmatter fields, section names, and table structures</critical>
+<action>6. Task file: {task_path}</action>
+<action>7. Parent PBI: {output_folder}/{pbi_id}/prd.md</action>
+<action>8. Task index: {output_folder}/{pbi_id}/tasks.md</action>
 
 <action if="task involves tests">Load testing strategy: {project-root}/docs/rules/sections/4-testing-strategy.md</action>
 
-<action>Parse task file and extract:
-- Task title
-- Current status (from Status History table - last entry)
-- Requirements (all items from Requirements section)
-- Files to modify (from Files Modified section)
-- Verification steps (from Verification section)
-- Implementation plan (from Implementation Plan section)
+<critical>Parse task file according to TASK_TEMPLATE.md structure</critical>
+<action>Parse task file and extract:</action>
+- YAML frontmatter (priority, created, updated, estimated_hours)
+- Task title (from h1 header after frontmatter)
+- Current status (from Status History table - last entry in "To Status" column)
+- Goal (from Goal section)
+- Context (from Context section)
+- Requirements (all checkbox items from Requirements section)
+- Implementation Steps (from Implementation Steps section)
+- Files to modify/create (from Files to Modify/Create section)
+- Testing requirements (from Testing section)
+- Success Criteria (from Success Criteria section)
 </action>
 
 <action>Parse PBI file and extract:
@@ -187,6 +195,8 @@ Continue to implementation? (y/n)
 
 <step n="5" goal="Transition task to InProgress">
 <action>Generate ISO 8601 timestamp using {date} variable</action>
+<critical>Status History table has columns: Timestamp | Action | From Status | To Status | Details | User</critical>
+<critical>Refer to TASK_TEMPLATE.md for exact table structure</critical>
 <action>Create history entry: "| {timestamp} | State Transition | Agreed | InProgress | Started execution | {user_name} |"</action>
 <action>Update {task_path} - find Status History table and append new row</action>
 <action>Update {output_folder}/{pbi_id}/tasks.md - change status from Agreed to InProgress</action>
@@ -434,8 +444,10 @@ Duration: {duration}
 
 <step n="10" goal="Transition task to InReview">
 <action>Generate ISO 8601 timestamp using {date}</action>
+<critical>Follow Status History table format from TASK_TEMPLATE.md</critical>
 <action>Create history entry: "| {timestamp} | State Transition | InProgress | InReview | Implementation complete, all tests passing | {user_name} |"</action>
 <action>Update {task_path} - append new row to Status History table</action>
+<action>Update {task_path} YAML frontmatter - set updated: {timestamp}</action>
 <action>Update {output_folder}/{pbi_id}/tasks.md - change status from InProgress to InReview</action>
 <action if="config: automation.auto_update_backlog == true">Update {output_folder}/backlog.md</action>
 

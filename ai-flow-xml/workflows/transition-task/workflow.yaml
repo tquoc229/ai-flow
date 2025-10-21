@@ -1,0 +1,166 @@
+# Transition Task - Workflow Configuration
+name: transition-task
+description: "Manually transition task state without full execution - BMAD-inspired workflow"
+version: "2.0"
+author: "MyFlow Team"
+
+# ========================================
+# STANDARD CONFIG BLOCK (BMAD-inspired)
+# ========================================
+config_source: "{project-root}/ai-flow-config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# ========================================
+# WORKFLOW COMPONENT FILES (BMAD pattern)
+# ========================================
+installed_path: "{project-root}/workflows/transition-task"
+instructions: "{installed_path}/instructions.md"
+validation: false  # Simple state change, no complex validation
+template: false  # Action workflow
+
+# ========================================
+# CRITICAL RULES (AI MUST FOLLOW)
+# ========================================
+critical_rules:
+  - "ALWAYS validate transition is allowed per ai-flow-config.yaml"
+  - "NEVER transition without user confirmation"
+  - "ALWAYS check max_concurrent: 1 rule before setting to InProgress"
+  - "Log ALL transitions in Status History with timestamp"
+  - "Update task index after task state change"
+  - "Communicate in {communication_language} throughout workflow"
+
+# ========================================
+# FILES AI SHOULD READ (in this order)
+# ========================================
+recommended_inputs:
+  core_context:
+    - path: "{project-root}/AGENTS.md"
+      purpose: "Primary directive"
+      required: true
+
+    - path: "{project-root}/ai-flow-config.yaml"
+      purpose: "Task states and valid transitions"
+      required: true
+
+    - path: "{project-root}/docs/rules/sections/3-task-management.md"
+      purpose: "Task state transition rules"
+      required: true
+
+  task_context:
+    - path: "{task_path}"
+      purpose: "Current task state and details"
+      required: true
+
+    - path: "{output_folder}/{pbi_id}/tasks.md"
+      purpose: "Task index for concurrent task check"
+      required: true
+
+    - path: "{output_folder}/backlog.md"
+      purpose: "Backlog for auto-update (if enabled)"
+      required: false
+
+# ========================================
+# VARIABLES
+# ========================================
+variables:
+  required:
+    - name: "task_path"
+      description: "Full path to task file"
+      example: "docs/delivery/14/14-1.md"
+      validation:
+        - "File must exist"
+        - "Must be task detail file"
+
+    - name: "target_state"
+      description: "Desired target state"
+      example: "InProgress"
+      validation:
+        - "Must be valid state from config"
+        - "Transition from current state must be allowed"
+
+  optional:
+    - name: "transition_reason"
+      description: "Why this transition is needed"
+      default: "Manual state transition"
+      type: "string"
+
+# ========================================
+# EXECUTION SETTINGS
+# ========================================
+execution:
+  mode: "interactive"
+  strict: true
+  auto_load_context: true
+  show_context_summary: true
+  enable_elicitation: false
+  halt_on_policy_violation: true
+  allow_user_override: true
+
+# ========================================
+# EXPECTED OUTPUTS
+# ========================================
+outputs:
+  file_updates:
+    - target: "{task_path}"
+      description: "Task detail file"
+      changes:
+        - "Add row to Status History table"
+      preserve: "All existing content"
+
+    - target: "{output_folder}/{pbi_id}/tasks.md"
+      description: "Task index"
+      changes:
+        - "Update Status column"
+
+    - target: "{output_folder}/backlog.md"
+      description: "Backlog (if auto-update enabled)"
+      changes:
+        - "Update task status"
+      conditional: "Only if automation.auto_update_backlog: true"
+
+  console_output:
+    - type: "validation_summary"
+      format: "markdown"
+      content: "Show current state, target state, transition validity"
+
+    - type: "confirmation_prompt"
+      format: "interactive"
+      content: "Ask user to confirm transition"
+
+    - type: "completion_summary"
+      format: "markdown"
+      content: "Confirm transition complete with timestamp"
+
+# ========================================
+# SUCCESS CRITERIA
+# ========================================
+success_criteria:
+  - "Transition is valid per config"
+  - "Concurrency rules respected (if transitioning to InProgress)"
+  - "Status History updated with new entry"
+  - "Task index updated"
+  - "Backlog updated (if enabled)"
+  - "User confirmed transition"
+  - "History logged with timestamp"
+
+# ========================================
+# METADATA
+# ========================================
+metadata:
+  workflow_type: "action"
+  interactive: true
+  estimated_duration: "2-5 minutes"
+  requires_user_approval: true
+  can_be_resumed: false
+
+# ========================================
+# RELATED WORKFLOWS
+# ========================================
+related_workflows:
+  - name: "execute-task"
+    path: "{project-root}/workflows/execute-task/workflow.yaml"
+    use_when: "Full task execution with implementation"

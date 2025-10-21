@@ -54,6 +54,11 @@ recommended_inputs:
       required: true
       when: "always"
 
+    - path: "{installed_path}/PRD_TEMPLATE.md"
+      purpose: "PRD template structure and field descriptions - MUST follow this format when creating PRD"
+      required: true
+      when: "always"
+
   # Phase 2: Load existing context
   existing_context:
     - path: "{output_folder}/backlog.md"

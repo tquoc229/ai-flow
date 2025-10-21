@@ -75,6 +75,11 @@ recommended_inputs:
       required: true
       when: "always"
 
+    - path: "workflows/decompose-tasks/TASK_TEMPLATE.md"
+      purpose: "Task file template structure - understand how to parse and update task files"
+      required: true
+      when: "always"
+
     - path: "{task_path}"
       purpose: "Task details to execute (Description, Requirements, Implementation Plan, Verification)"
       required: true
@@ -347,8 +352,8 @@ related_workflows:
     path: "workflows/create-pbi/workflow.yaml"
     use_when: "Need to create a new PBI"
 
-  - name: "generate-tasks"
-    path: "workflows/generate-tasks/workflow.yaml"
+  - name: "decompose-tasks"
+    path: "workflows/decompose-tasks/workflow.yaml"
     use_when: "Need to break down PBI into tasks"
 
 # ========================================

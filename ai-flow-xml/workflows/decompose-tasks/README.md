@@ -23,7 +23,9 @@ Use this workflow when:
 
 - **workflow.yaml** - Configuration, variables, and metadata
 - **instructions.md** - Step-by-step execution guide (XML structure)
-- (No checklist needed - straightforward decomposition)
+- **checklist.md** - Validation checklist for task decomposition
+- **TASK_TEMPLATE.md** - Standard template for individual task files
+- **README.md** - This documentation
 
 ## How to Invoke
 
@@ -81,17 +83,33 @@ Load: workflows/decompose-tasks/workflow.yaml
 - ✅ tasks.md index created
 - ✅ PBI status = "InProgress"
 
-## Task Creation Rules
+## Task File Structure
 
-Each task must have:
-- Clear goal statement
-- Context from parent PBI
-- Specific requirements
-- Implementation steps
-- Files to modify/create
-- Testing requirements
-- Success criteria
-- Status History table
+Each task file follows a standard template (see [TASK_TEMPLATE.md](TASK_TEMPLATE.md)):
+
+### YAML Frontmatter
+```yaml
+---
+priority: medium
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+estimated_hours: X
+---
+```
+
+### Required Sections
+1. **Title**: `# Task: {pbi_id}-{n} {task_name}`
+2. **Goal**: Clear objective statement
+3. **Context**: Why this task, background from PBI
+4. **Status History**: Table tracking all state transitions
+5. **Requirements**: Checkbox list of specific requirements
+6. **Implementation Steps**: Numbered, detailed steps
+7. **Files to Modify/Create**: Checkbox list with descriptions
+8. **Testing**: Test cases and coverage target
+9. **Success Criteria**: Completion checklist
+10. **References**: Related tasks and notes
+
+For detailed template documentation, see [TASK_TEMPLATE.md](TASK_TEMPLATE.md).
 
 ## Related Workflows
 

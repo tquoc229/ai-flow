@@ -50,6 +50,10 @@ recommended_inputs:
       purpose: "Task creation rules and structure"
       required: true
 
+    - path: "{installed_path}/TASK_TEMPLATE.md"
+      purpose: "Task file template structure and field descriptions - MUST follow this format when creating tasks"
+      required: true
+
   pbi_context:
     - path: "{output_folder}/backlog.md"
       purpose: "Verify PBI status is ReadyForTasks"

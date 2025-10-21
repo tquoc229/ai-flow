@@ -22,7 +22,9 @@ Use this workflow when:
 
 - **workflow.yaml** - Configuration, variables, and metadata
 - **instructions.md** - Step-by-step execution guide (XML structure)
-- **checklist.md** - Validation checklist (planned)
+- **checklist.md** - Validation checklist for PBI creation
+- **PRD_TEMPLATE.md** - Standard template for PRD files
+- **README.md** - This documentation
 
 ## How to Invoke
 
@@ -72,10 +74,42 @@ Load: workflows/create-pbi/workflow.yaml
    - History entry logged
 
 2. **PRD File** (`{pbi_id}/prd.md`)
-   - Complete Product Requirements Document
+   - Complete Product Requirements Document following [PRD_TEMPLATE.md](PRD_TEMPLATE.md)
    - All required sections filled
    - Legacy Discovery Findings documented
    - Bidirectional link to backlog
+
+## PRD File Structure
+
+The generated PRD follows a standard template (see [PRD_TEMPLATE.md](PRD_TEMPLATE.md)):
+
+### YAML Frontmatter
+```yaml
+---
+status: PlanInReview
+priority: medium
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+estimated_hours: TBD
+---
+```
+
+### Required Sections
+1. **Title**: Clear PBI name
+2. **Context**: Why, Current Situation, Desired State
+3. **User Story**: As a/I want/So that + Example Scenario
+4. **Requirements**: Functional (checkbox list) + Non-Functional
+5. **Technical Approach**:
+   - Architecture description
+   - **Legacy Discovery Findings** (CRITICAL)
+   - Key Components (to build/modify)
+   - Technology Stack
+6. **Implementation Plan**: Phases with steps, files, estimates
+7. **Testing Strategy**: Unit, Integration, E2E tests
+8. **Success Criteria**: Completion checklist
+9. **References**: Links and notes
+
+For detailed template documentation, see [PRD_TEMPLATE.md](PRD_TEMPLATE.md).
 
 ## Success Criteria
 

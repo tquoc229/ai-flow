@@ -1,0 +1,169 @@
+# Approve PBI Plan - Workflow Configuration
+name: approve-pbi-plan
+description: "User reviews and approves/rejects PBI plan (PRD) - BMAD-inspired workflow"
+version: "2.0"
+author: "MyFlow Team"
+
+# ========================================
+# STANDARD CONFIG BLOCK (BMAD-inspired)
+# ========================================
+config_source: "{project-root}/ai-flow-config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# ========================================
+# WORKFLOW COMPONENT FILES (BMAD pattern)
+# ========================================
+installed_path: "{project-root}/workflows/approve-pbi-plan"
+instructions: "{installed_path}/instructions.md"
+validation: false  # Simple workflow, no validation checklist needed
+template: false  # Action workflow
+
+# ========================================
+# CRITICAL RULES (AI MUST FOLLOW)
+# ========================================
+critical_rules:
+  - "NEVER approve plan without explicit user confirmation"
+  - "ALWAYS read PRD before presenting to user"
+  - "Present PRD summary in clear, digestible format"
+  - "Allow user to request revisions with specific feedback"
+  - "Log all state transitions in PBI History with timestamp"
+  - "Communicate in {communication_language} throughout workflow"
+
+# ========================================
+# FILES AI SHOULD READ (in this order)
+# ========================================
+recommended_inputs:
+  core_context:
+    - path: "{project-root}/AGENTS.md"
+      purpose: "Primary directive"
+      required: true
+
+    - path: "{project-root}/ai-flow-config.yaml"
+      purpose: "PBI states and transitions"
+      required: true
+
+    - path: "{project-root}/docs/rules/sections/2-pbi-management.md"
+      purpose: "PBI approval workflow"
+      required: true
+
+    - path: "{project-root}/workflows/create-pbi/PRD_TEMPLATE.md"
+      purpose: "PRD template structure - understand PRD format for review"
+      required: true
+
+  pbi_context:
+    - path: "{output_folder}/backlog.md"
+      purpose: "Verify PBI status is PlanInReview"
+      required: true
+
+    - path: "{output_folder}/{pbi_id}/prd.md"
+      purpose: "Plan to review and approve"
+      required: true
+
+# ========================================
+# VARIABLES
+# ========================================
+variables:
+  required:
+    - name: "pbi_id"
+      description: "PBI ID to approve"
+      example: "14"
+      validation:
+        - "PBI must exist"
+        - "PBI status must be 'PlanInReview' or 'NeedsPlanRework'"
+
+  optional:
+    - name: "show_full_prd"
+      description: "Display full PRD or just summary"
+      default: false
+      type: "boolean"
+
+# ========================================
+# EXECUTION SETTINGS
+# ========================================
+execution:
+  mode: "interactive"
+  strict: false  # User can approve despite warnings
+  auto_load_context: true
+  show_context_summary: true
+  enable_elicitation: false  # This is user decision workflow
+  halt_on_policy_violation: false  # User override allowed
+  allow_user_override: true
+
+# ========================================
+# EXPECTED OUTPUTS
+# ========================================
+outputs:
+  file_updates:
+    - target: "{output_folder}/backlog.md"
+      description: "Update PBI status"
+      changes:
+        - "IF approved: PlanInReview → ReadyForTasks"
+        - "IF rejected: PlanInReview → NeedsPlanRework"
+      preserve: "All existing PBIs"
+
+    - target: "{output_folder}/{pbi_id}/prd.md"
+      description: "Update PRD frontmatter"
+      changes:
+        - "Update status field"
+        - "Update updated timestamp"
+        - "IF rejected: Add revision notes section"
+
+  console_output:
+    - type: "prd_summary"
+      format: "markdown"
+      content: "Display PRD summary for user review"
+
+    - type: "user_decision"
+      format: "interactive"
+      content: "Prompt user to approve/reject/revise"
+
+    - type: "completion_summary"
+      format: "markdown"
+      content: "Final summary with status and next steps"
+
+# ========================================
+# SUCCESS CRITERIA
+# ========================================
+success_criteria:
+  approval:
+    - "User explicitly approved plan"
+    - "Status changed to ReadyForTasks"
+    - "History logged with approval"
+    - "PRD frontmatter updated"
+
+  rejection:
+    - "User provided revision feedback"
+    - "Status changed to NeedsPlanRework"
+    - "Feedback captured in PRD"
+    - "History logged with rejection reason"
+
+  validation:
+    - "All state transitions valid"
+    - "History complete"
+    - "Bidirectional links intact"
+
+# ========================================
+# METADATA
+# ========================================
+metadata:
+  workflow_type: "action"
+  interactive: true
+  estimated_duration: "5-15 minutes"
+  requires_user_approval: true  # This IS the approval workflow
+  can_be_resumed: false
+
+# ========================================
+# RELATED WORKFLOWS
+# ========================================
+related_workflows:
+  - name: "create-pbi"
+    path: "{project-root}/workflows/create-pbi/workflow.yaml"
+    use_when: "Need to revise PRD (if rejected)"
+
+  - name: "decompose-tasks"
+    path: "{project-root}/workflows/decompose-tasks/workflow.yaml"
+    use_when: "Plan approved, ready to create tasks"

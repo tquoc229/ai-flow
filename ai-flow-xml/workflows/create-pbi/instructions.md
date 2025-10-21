@@ -16,6 +16,9 @@
 
 <step n="1" goal="Load PBI Management policy and current backlog">
 <action>Load PBI Management policy: {project-root}/docs/rules/sections/2-pbi-management.md</action>
+<action>Load PRD template structure: {installed_path}/PRD_TEMPLATE.md</action>
+<critical>PRD_TEMPLATE.md defines the EXACT format you MUST use when creating PRD files</critical>
+<critical>Study the template structure, field descriptions, and examples carefully</critical>
 <action>Load current backlog: {output_folder}/backlog.md</action>
 <action>Parse backlog structure:
 - Extract existing PBI IDs
@@ -213,7 +216,10 @@ This helps us:
 <action>Create directory: {output_folder}/{pbi_id}/</action>
 <action>Create file: {output_folder}/{pbi_id}/prd.md</action>
 
-<action>Generate PRD content with all required sections:</action>
+<critical>You MUST follow the PRD template structure from {installed_path}/PRD_TEMPLATE.md</critical>
+<critical>This template was loaded in Step 2 - review it to understand the required format</critical>
+
+<action>Generate PRD content following PRD_TEMPLATE.md structure with all required sections:</action>
 
 <example>
 ---
@@ -224,100 +230,138 @@ updated: {date}
 estimated_hours: TBD
 ---
 
-# PBI-{pbi_id}: {title_from_user_story}
+# {title_from_user_story}
 
 ## Context
 
-### Why
-{extract_benefit_from_user_story}
+**Why do we need this?**
+{extract_benefit_from_user_story_and_explain_problem_or_opportunity}
 
-### Current Situation
-{describe_current_state}
+**Current Situation:**
+{describe_current_state_what_exists_now}
 
-### Desired State
-{describe_desired_state}
+**Desired State:**
+{describe_desired_state_what_we_want}
 
 ## User Story
 
-{user_story}
+As a {actor}
+I want {action}
+So that {benefit}
+
+**Example Scenario:**
+
+```
+Given {precondition}
+When {user_action}
+Then {expected_outcome}
+```
 
 ## Requirements
 
 ### Functional Requirements
-1. {requirement_1}
-2. {requirement_2}
+
+- [ ] REQ-1: {specific_requirement_1}
+- [ ] REQ-2: {specific_requirement_2}
+- [ ] REQ-3: {specific_requirement_3}
 ...
 
 ### Non-Functional Requirements
-- Performance: {performance_requirement}
-- Security: {security_requirement}
-- Scalability: {scalability_requirement}
+
+- [ ] Performance: {e.g._response_time_requirement}
+- [ ] Security: {e.g._authentication_requirements}
+- [ ] Scalability: {e.g._concurrent_users_support}
 
 ## Technical Approach
 
-### Architecture
-{high_level_architecture}
+**Architecture:**
 
-### Legacy Discovery Findings
+```
+{describe_or_diagram_the_architecture}
+```
+
+---
+
+### **Legacy Discovery Findings**
 
 {paste_from_step_6}
 
-**Implementation Strategy:**
-Based on legacy discovery, we will:
-1. Modify {existing_component_1} to add {new_functionality}
-2. Reuse {utility_function} for {purpose}
-3. Only create new {component_x} where no existing solution exists
+**Findings Summary:**
+- **File:** `{file_path_1}`
+  - **Function/API:** `{function_name}()`
+  - **Notes:** Will be reused/extended for {purpose}
 
-### Key Components
-- {component_1}: {description}
-- {component_2}: {description}
+- **Component:** `{component_path}`
+  - **Notes:** Will be reused for {purpose}
 
-### Tech Stack
-- {technology_1}
-- {technology_2}
+---
+
+**Key Components (To build/modify):**
+[List new components to build OR existing components to modify, based on Discovery Findings above]
+
+1. {component_1}: {purpose_and_what_to_do}
+2. {component_2}: {purpose_and_what_to_do}
+3. {component_3}: {purpose_and_what_to_do}
+
+**Technology Stack:**
+
+- Frontend: {frontend_technologies}
+- Backend: {backend_technologies}
+- Database: {database_technologies}
+- External Services: {apis_libraries_services}
 
 ## Implementation Plan
 
 ### Phase 1: {phase_name}
-**Modify existing code:**
-- [ ] Update {existing_file} to {changes}
-- [ ] Extend {existing_component} with {new_feature}
 
-**Create new code (if needed):**
-- [ ] Implement {new_component} for {purpose}
+1. Step 1: {description}
+   - Files: {list_files_to_create_or_modify}
+   - Estimated: {time_estimate}
+
+2. Step 2: {description}
+   - Files: {list_files}
+   - Estimated: {time_estimate}
 
 ### Phase 2: {phase_name}
+
+1. Step 1: {description}
+   - Files: {list_files}
+   - Estimated: {time_estimate}
+
 ...
 
 ## Testing Strategy
 
-### Unit Tests
-- {test_category_1}: {what_to_test}
-- {test_category_2}: {what_to_test}
+**Unit Tests:**
+- {test_case_1}
+- {test_case_2}
+- {test_case_3}
 
-### Integration Tests
-- {integration_scenario_1}
-- {integration_scenario_2}
+**Integration Tests:**
+- {test_scenario_1}
+- {test_scenario_2}
 
-### E2E Tests (if applicable)
-- {e2e_scenario}
+**E2E Tests:**
+- {user_flow_1}
+- {user_flow_2}
 
 ## Success Criteria
 
-{map_from_conditions_of_satisfaction}
+- [ ] All functional requirements met
+- [ ] All tests passing
+- [ ] Code reviewed and approved
+- [ ] Documentation updated
+- [ ] Performance benchmarks met
+{map_additional_criteria_from_conditions_of_satisfaction}
 
-- [ ] {criterion_1}
-- [ ] {criterion_2}
-...
+## References
 
-## References & Notes
+- [Link to design doc or similar implementation]
+- [Back to Backlog](../backlog.md)
 
-**Related PBIs:** None yet
+## Notes
 
-**Backlog Link:** [Back to Backlog](../backlog.md)
-
-**Notes:**
-{any_additional_notes}
+{any_additional_notes_constraints_or_considerations}
 </example>
 
 <action>Write PRD to {output_folder}/{pbi_id}/prd.md</action>
