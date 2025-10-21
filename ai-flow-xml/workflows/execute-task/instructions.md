@@ -1,7 +1,7 @@
 # Execute Task - Workflow Instructions
 
 <critical>The workflow execution engine is governed by: {project-root}/ai-flow-config.yaml</critical>
-<critical>You MUST have already loaded and processed: {project-root}/workflows/execute-task.yaml</critical>
+<critical>You MUST have already loaded and processed: {project-root}/workflows/execute-task/workflow.yaml</critical>
 <critical>Communicate in {communication_language} throughout task execution</critical>
 <critical>Address user as {user_name} in greetings and summaries</critical>
 
@@ -485,7 +485,7 @@ END IF</check>
 </step>
 
 <step n="12" goal="Run validation checklist">
-<action>Load validation checklist from: {project-root}/workflows/execute-task-checklist.md</action>
+<action>Load validation checklist from: {project-root}/workflows/execute-task-checklist/workflow.md</action>
 <action>Execute each validation item and mark PASS/FAIL</action>
 <action>Calculate pass rate: {passed}/{total} items</action>
 

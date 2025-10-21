@@ -213,7 +213,7 @@ metadata:
 # ========================================
 related_workflows:
   - name: "approve-pbi-plan"
-    path: "{project-root}/workflows/approve-pbi-plan.yaml"
+    path: "{project-root}/workflows/approve-pbi-plan/workflow.yaml"
     use_when: "User reviews and approves PRD plan"
 
   - name: "decompose-tasks"
