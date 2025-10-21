@@ -13,7 +13,7 @@
     </action>
     <action>
         **3.2 Backlog Document Structure**
-        - **Location:** `docs/delivery/backlog.md`
+        - **Location:** `{locations.backlog_file}`
         - **Format:** A markdown table with columns: ID, Actor, User Story, Status, Conditions of Satisfaction (CoS).
         - **Core Principles:** Single source of truth, ordered by priority, unique IDs, and defined status values.
     </action>
@@ -22,7 +22,7 @@
 <step n="2" goal="Learn PBI Workflow States">
     <action>
         **3.3 PBI Workflow States**
-        The following states define the PBI lifecycle:
+        The PBI lifecycle is defined by the states listed in `pbi.states` in `config.yaml`. The standard states are:
         | State | Description | What It Means |
         |---|---|---|
         | `Proposed` | New PBI idea | PBI mới được tạo (1-line user story). Chờ User duyệt ý tưởng. |
@@ -161,7 +161,7 @@
 <step n="8" goal="Understand PBI Detail Document Structure">
     <action>
         **3.6 PBI Detail Document Structure (`prd.md`)**
-        - **Location:** `docs/delivery/<PBI-ID>/prd.md`.
+        - **Location:** `{pbi.pbi_folder_pattern}/prd.md` (as defined in `pbi.prd_file_pattern`).
         - **Purpose:** The source of truth for PBI context, requirements, and high-level planning.
         - **Creation:** Created automatically when a PBI moves from `Proposed` → `PlanInReview`.
     </action>

@@ -281,14 +281,15 @@
     <action>
         Use this Git workflow for task completion:
         ```bash
-        # When task moves to Done status
+        # When task moves to Done status, use the format from config.yaml:
+        # {automation.commit_message_format}
 
         # Option 1: Using automation helper
-        git acp "1-7 Add pino logging to help debug database connection issues"
+        git acp "feat(1): 1-7 Add pino logging"
 
         # Option 2: Manual steps
         git add .
-        git commit -m "1-7 Add pino logging to help debug database connection issues"
+        git commit -m "feat(1): 1-7 Add pino logging"
         git push origin feature/1-7-add-pino-logging
         ```
     </action>

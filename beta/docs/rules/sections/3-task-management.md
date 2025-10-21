@@ -23,6 +23,7 @@
 <step n="2" goal="Learn Task Workflow States">
     <action>
         **4.3 Task Workflow States**
+        The Task lifecycle is defined by the states listed in `task.states` in `config.yaml`. The standard states are:
         | State | Description |
         |---|---|
         | `Proposed` | Defined but not yet approved by User. |
@@ -31,6 +32,7 @@
         | `Review` | Implementation complete, pending User review. |
         | `Done` | User approved, changes merged, task closed. |
         | `Blocked` | Cannot proceed due to an external issue. |
+        | `Cancelled` | Task cancelled and will not be worked on. |
     </action>
     <action>
         **4.4 Workflow Diagram:**
@@ -120,7 +122,7 @@
 <step n="8" goal="Adhere to Concurrency, History, and Validation Rules">
     <action>
         **4.6 Task Concurrency Limit**
-        - **MANDATORY RULE:** Only ONE task per PBI may be `InProgress` at any time to maintain focus and prevent conflicts.
+        - **MANDATORY RULE:** Only {task.max_concurrent} task(s) per PBI may be `InProgress` at any time to maintain focus and prevent conflicts.
         - **Enforcement:** Before starting a task, the AI must check for other `InProgress` tasks for the same PBI.
     </action>
     <action>
@@ -179,8 +181,8 @@
 
 <step n="11" goal="Follow Version Control and Indexing Rules">
     <action>
-        **4.10 Version Control for Task Completion**
-        - **Commit Message Format:** `<task-id> <task-description>` (e.g., `6-1 Define and implement Circuit Breaker state machine`).
+**Version Control for Task Completion**
+        - **Commit Message Format:** `{automation.commit_message_format}` (e.g., `feat(6): 6-1 Define and implement Circuit Breaker state machine`).
         - **Pull Request Title:** `[<task-id>] <task-description>`.
         - **Automation:** When a task is `Done`, the `git acp` command should be used to stage, commit, and push changes.
     </action>
