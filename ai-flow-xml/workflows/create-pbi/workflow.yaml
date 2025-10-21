@@ -1,0 +1,225 @@
+# Create PBI - Workflow Configuration
+name: create-pbi
+description: "Create new Product Backlog Item from idea to plan approval - BMAD-inspired workflow"
+version: "2.0"
+author: "MyFlow Team"
+
+# ========================================
+# STANDARD CONFIG BLOCK (BMAD-inspired)
+# ========================================
+config_source: "{project-root}/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# ========================================
+# WORKFLOW COMPONENT FILES (BMAD pattern)
+# ========================================
+installed_path: "{project-root}/workflows"
+instructions: "{installed_path}/create-pbi-instructions.md"
+validation: "{installed_path}/create-pbi-checklist.md"
+template: false  # Action workflow - creates PBI documents
+
+# ========================================
+# CRITICAL RULES (AI MUST FOLLOW)
+# ========================================
+critical_rules:
+  - "NEVER create PBI without user story and Conditions of Satisfaction (CoS)"
+  - "ALWAYS perform Legacy Discovery before creating implementation plan"
+  - "ALWAYS prioritize reusing existing code over writing new code"
+  - "Create bidirectional links between backlog.md and prd.md"
+  - "Log all state transitions in PBI History with timestamp"
+  - "Communicate in {communication_language} throughout workflow"
+
+# ========================================
+# FILES AI SHOULD READ (in this order)
+# ========================================
+recommended_inputs:
+  # Phase 1: Load core context
+  core_context:
+    - path: "{project-root}/AGENTS.md"
+      purpose: "Primary directive and critical rules"
+      required: true
+      when: "always"
+
+    - path: "{project-root}/config.yaml"
+      purpose: "Configuration including PBI states and transitions"
+      required: true
+      when: "always"
+
+    - path: "{project-root}/docs/rules/sections/2-pbi-management.md"
+      purpose: "PBI lifecycle, states, transitions, and detailed workflows"
+      required: true
+      when: "always"
+
+  # Phase 2: Load existing context
+  existing_context:
+    - path: "{output_folder}/backlog.md"
+      purpose: "Current backlog to assign unique PBI ID and understand priorities"
+      required: true
+      when: "always"
+
+  # Phase 3: Load project documentation (for Legacy Discovery)
+  project_docs:
+    - path: "{project-root}/docs/codebase-structure-architecture-code-standards.md"
+      purpose: "Project architecture, folder structure, and coding standards"
+      required: false
+      when: "when creating plan (PlanInReview)"
+
+    - path: "{project-root}/docs/Reusable-Components.md"
+      purpose: "Existing reusable components, utilities, and shared modules - AVOID duplicating these"
+      required: false
+      when: "when creating plan (PlanInReview) AND feature involves UI/components"
+
+    - path: "{project-root}/docs/api-docs.md"
+      purpose: "API endpoints, contracts, and data models - check before creating new APIs"
+      required: false
+      when: "when creating plan (PlanInReview) AND feature involves backend/API"
+
+    - path: "{project-root}/docs/integration-guide.md"
+      purpose: "Third-party integrations, authentication flows, external services"
+      required: false
+      when: "when creating plan (PlanInReview) AND feature involves external integrations"
+
+    - path: "{project-root}/docs/project-overview.md"
+      purpose: "Business context, user personas, and product vision"
+      required: false
+      when: "when creating plan (PlanInReview) - helps understand feature purpose"
+
+    - path: "{project-root}/docs/DesignGuideline.md"
+      purpose: "UI/UX patterns, design system, component library - MUST follow for consistency"
+      required: false
+      when: "when creating plan (PlanInReview) AND feature involves user interface"
+
+# ========================================
+# VARIABLES (AI should ask user if not provided)
+# ========================================
+variables:
+  required:
+    - name: "user_story"
+      description: "User story in format: As a [actor], I want [action], so that [benefit]"
+      example: "As a developer, I want automated testing, so that I can catch bugs early"
+      validation:
+        - "Must include: As a..., I want..., so that..."
+        - "Must be clear and specific"
+
+    - name: "conditions_of_satisfaction"
+      description: "List of measurable success criteria"
+      example: "- All unit tests passing\n- Code coverage > 80%\n- User can authenticate"
+      validation:
+        - "Must have at least 1 criterion"
+        - "Each criterion must be measurable"
+
+  optional:
+    - name: "priority"
+      description: "PBI priority level"
+      default: "Medium"
+      options: ["High", "Medium", "Low"]
+
+    - name: "estimated_hours"
+      description: "Rough time estimate"
+      default: "TBD"
+      type: "string"
+
+    - name: "perform_legacy_discovery"
+      description: "Perform targeted legacy code search"
+      default: true
+      type: "boolean"
+
+# ========================================
+# EXECUTION SETTINGS
+# ========================================
+execution:
+  mode: "interactive"
+  strict: true
+  auto_load_context: true
+  show_context_summary: true
+  enable_elicitation: true
+  halt_on_policy_violation: true
+  allow_user_override: true
+
+# ========================================
+# EXPECTED OUTPUTS
+# ========================================
+outputs:
+  file_updates:
+    - target: "{output_folder}/backlog.md"
+      description: "Backlog file with new PBI entry"
+      changes:
+        - "Add new row to PBI table with unique ID"
+        - "Add entry to PBI History section"
+      preserve: "All existing PBIs and structure"
+
+    - target: "{output_folder}/{pbi_id}/prd.md"
+      description: "PBI detail document (Product Requirements Document)"
+      changes:
+        - "Create complete PRD with all required sections"
+        - "Include Legacy Discovery Findings section"
+        - "Bidirectional link to backlog.md"
+      conditional: "Only when status → PlanInReview"
+
+  console_output:
+    - type: "context_summary"
+      format: "markdown"
+      content: "Display loaded context and extracted information"
+
+    - type: "progress_updates"
+      format: "markdown"
+      content: "Step-by-step progress through workflow states"
+
+    - type: "completion_summary"
+      format: "markdown"
+      content: "Final summary with PBI ID, status, and next steps"
+
+# ========================================
+# SUCCESS CRITERIA
+# ========================================
+success_criteria:
+  creation:
+    - "PBI created with unique ID in backlog.md"
+    - "User story follows standard format"
+    - "At least 1 Condition of Satisfaction defined"
+    - "Status set to 'Proposed'"
+    - "History entry logged with timestamp"
+
+  planning:
+    - "Legacy Discovery performed (if applicable)"
+    - "PRD file created with all required sections"
+    - "Legacy Discovery Findings documented"
+    - "Implementation Plan prioritizes code reuse"
+    - "Bidirectional links established"
+    - "Status set to 'PlanInReview'"
+
+  validation:
+    - "All required sections in PRD complete"
+    - "No placeholder text remains"
+    - "Links between files are valid"
+    - "PBI follows policy structure"
+
+# ========================================
+# WORKFLOW METADATA
+# ========================================
+metadata:
+  workflow_type: "action"
+  interactive: true
+  estimated_duration: "15-45 minutes (depends on complexity)"
+  can_be_resumed: true
+  requires_user_approval: true
+
+# ========================================
+# RELATED WORKFLOWS
+# ========================================
+related_workflows:
+  - name: "approve-pbi-plan"
+    path: "{project-root}/workflows/approve-pbi-plan.yaml"
+    use_when: "User reviews and approves PRD plan"
+
+  - name: "decompose-tasks"
+    path: "{project-root}/workflows/decompose-tasks.yaml"
+    use_when: "Break down approved PBI into tasks"
+
+  - name: "execute-task"
+    path: "{project-root}/workflows/execute-task.yaml"
+    use_when: "Implement individual tasks"

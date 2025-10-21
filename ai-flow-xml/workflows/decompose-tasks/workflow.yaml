@@ -1,0 +1,115 @@
+# Decompose Tasks - Workflow Configuration
+name: decompose-tasks
+description: "Break down approved PBI plan into concrete tasks - BMAD-inspired workflow"
+version: "2.0"
+author: "MyFlow Team"
+
+# ========================================
+# STANDARD CONFIG BLOCK (BMAD-inspired)
+# ========================================
+config_source: "{project-root}/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
+
+# ========================================
+# WORKFLOW COMPONENT FILES (BMAD pattern)
+# ========================================
+installed_path: "{project-root}/workflows"
+instructions: "{installed_path}/decompose-tasks-instructions.md"
+validation: false  # No separate checklist needed
+template: false  # Action workflow
+
+# ========================================
+# CRITICAL RULES (AI MUST FOLLOW)
+# ========================================
+critical_rules:
+  - "ALWAYS read approved PRD before decomposing tasks"
+  - "Auto-approve all tasks (set status to 'Agreed') since User already approved plan"
+  - "Create tasks.md index AND individual task files"
+  - "Each task must be atomic and implementable independently"
+  - "Follow task file structure from policy exactly"
+  - "Transition PBI: ReadyForTasks → InProgress after task creation"
+
+# ========================================
+# FILES AI SHOULD READ (in this order)
+# ========================================
+recommended_inputs:
+  core_context:
+    - path: "{project-root}/AGENTS.md"
+      purpose: "Primary directive"
+      required: true
+
+    - path: "{project-root}/config.yaml"
+      purpose: "Task states and validation rules"
+      required: true
+
+    - path: "{project-root}/docs/rules/sections/3-task-management.md"
+      purpose: "Task creation rules and structure"
+      required: true
+
+  pbi_context:
+    - path: "{output_folder}/backlog.md"
+      purpose: "Verify PBI status is ReadyForTasks"
+      required: true
+
+    - path: "{output_folder}/{pbi_id}/prd.md"
+      purpose: "Implementation plan to decompose"
+      required: true
+
+# ========================================
+# VARIABLES
+# ========================================
+variables:
+  required:
+    - name: "pbi_id"
+      description: "PBI ID to decompose into tasks"
+      example: "14"
+      validation:
+        - "PBI must exist"
+        - "PBI status must be 'ReadyForTasks'"
+
+# ========================================
+# EXPECTED OUTPUTS
+# ========================================
+outputs:
+  file_updates:
+    - target: "{output_folder}/{pbi_id}/tasks.md"
+      description: "Task index file (auto-generated)"
+      changes:
+        - "Create markdown table with all tasks"
+
+    - target: "{output_folder}/{pbi_id}/{pbi_id}-{n}.md"
+      description: "Individual task detail files"
+      changes:
+        - "Create one file per task"
+        - "Set status to 'Agreed'"
+        - "Log 'Created' and 'Auto-Approved' in history"
+
+    - target: "{output_folder}/backlog.md"
+      description: "Update PBI status"
+      changes:
+        - "Change status: ReadyForTasks → InProgress"
+        - "Add history entry"
+
+# ========================================
+# SUCCESS CRITERIA
+# ========================================
+success_criteria:
+  - "All tasks created from Implementation Plan phases"
+  - "Each task has complete detail file"
+  - "All tasks set to 'Agreed' status"
+  - "tasks.md index created with proper structure"
+  - "PBI status updated to 'InProgress'"
+  - "History logged for all transitions"
+
+# ========================================
+# METADATA
+# ========================================
+metadata:
+  workflow_type: "action"
+  interactive: true
+  estimated_duration: "10-30 minutes"
+  requires_user_approval: false  # Tasks auto-approved

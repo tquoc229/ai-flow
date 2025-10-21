@@ -1,7 +1,20 @@
 name: execute-task
-description: "Execute MyFlow task from Agreed to InReview - AI-native workflow"
-version: "1.0"
-author: "MyFlow"
+description: "Execute MyFlow task from Agreed to InReview - AI-native workflow with BMAD-inspired structure"
+version: "2.0"
+author: "MyFlow Team"
+
+# ========================================
+# STANDARD CONFIG BLOCK (BMAD-inspired)
+# ========================================
+# These variables are automatically pulled from central config.yaml
+# AI can use them directly in instructions with {variable} syntax
+
+config_source: "{project-root}/config.yaml"
+output_folder: "{config_source}:output_folder"
+user_name: "{config_source}:user_name"
+communication_language: "{config_source}:communication_language"
+document_output_language: "{config_source}:document_output_language"
+date: system-generated
 
 # ========================================
 # 🤖 AI AGENT INSTRUCTIONS
@@ -15,13 +28,11 @@ author: "MyFlow"
 # 5. ASK user for any missing variables
 # 6. PRESERVE existing document structures - only update Status History and append notes
 # 7. HALT on policy violations unless user explicitly overrides
+# 8. COMMUNICATE in {communication_language} throughout execution
 #
 # This workflow helps you execute tasks following MyFlow policy.
 # The instructions are written in human-readable format for you to follow.
 # ========================================
-
-# Configuration reference
-config_source: "{project-root}/config.yaml"
 
 # ========================================
 # CRITICAL RULES (AI MUST FOLLOW)
@@ -89,20 +100,48 @@ recommended_inputs:
       when: "if task involves tests"
 
     - path: "docs/codebase-structure-architecture-code-standards.md"
-      purpose: "Project architecture and coding standards"
+      purpose: "Project architecture, folder structure, and coding standards"
       required: false
       when: "if implementing new code"
 
-    - path: "docs/delivery/backlog.md"
-      purpose: "Full backlog for context (optional)"
+    - path: "docs/Reusable-Components.md"
+      purpose: "Existing reusable components - CHECK THIS FIRST before creating new components"
       required: false
-      when: "if needed for broader context"
+      when: "if task involves creating new functions/components/utilities"
+
+    - path: "docs/api-docs.md"
+      purpose: "API endpoints and data contracts - MUST follow existing patterns"
+      required: false
+      when: "if task involves API endpoints or data models"
+
+    - path: "docs/integration-guide.md"
+      purpose: "Third-party integrations and authentication - follow existing patterns"
+      required: false
+      when: "if task involves external services or integrations"
+
+    - path: "docs/DesignGuideline.md"
+      purpose: "UI/UX design system - MUST follow for all UI changes"
+      required: false
+      when: "if task involves user interface or styling"
+
+    - path: "docs/project-overview.md"
+      purpose: "Business context and product vision - helps understand feature purpose"
+      required: false
+      when: "if task requires business context understanding"
+
+    - path: "docs/delivery/backlog.md"
+      purpose: "Full backlog for broader context"
+      required: false
+      when: "if needed for understanding dependencies or priorities"
 
 # ========================================
-# INSTRUCTIONS FOR AI TO FOLLOW
+# WORKFLOW COMPONENT FILES (BMAD pattern)
 # ========================================
-instructions_file: "workflows/execute-task-instructions.md"
-validation_checklist: "workflows/execute-task-checklist.md"
+# Path convention: use {project-root} for portability
+installed_path: "{project-root}/workflows"
+instructions: "{installed_path}/execute-task-instructions.md"
+validation: "{installed_path}/execute-task-checklist.md"
+template: false  # Action workflow - no template needed
 
 # ========================================
 # VARIABLES (AI should ask user if not provided)

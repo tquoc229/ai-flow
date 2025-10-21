@@ -29,44 +29,100 @@
       to clarify | No match → show "Not recognized"</step>
 
   <step n="8">When executing a menu item: Check menu-handlers section below - extract any attributes from the selected menu item
-      (workflow, task, policy, action) and follow the corresponding handler instructions</step>
+      (workflow, policy, action) and follow the corresponding handler instructions</step>
 
   <menu-handlers>
     <handlers>
       <handler type="workflow">
         When menu item has: workflow="path/to/workflow.yaml"
-        1. Load the workflow.yaml file at specified path
-        2. Read workflow configuration (name, description, critical_rules, recommended_inputs, instructions_file)
-        3. Load all files from recommended_inputs section
-        4. Load instructions file (usually workflow-instructions.md)
-        5. Execute instructions step-by-step following the flow exactly
-        6. Use variables section to ask user for required inputs
-        7. Validate using checklist (if validation_checklist specified)
-        8. Save outputs as defined in outputs section
-        9. Display completion summary to user
-      </handler>
 
-      <handler type="task">
-        When menu item has: task="path/to/task.xml"
-        1. Load the task.xml file at specified path
-        2. Read task objective and flow
-        3. Execute each step in flow section IN EXACT ORDER
-        4. Follow all critical rules defined in task
-        5. HALT when instructed
-        6. Display results to user
+        BMAD-Inspired Workflow Execution Pattern:
+
+        1. **Load workflow.yaml** at specified path
+           - Read complete configuration (name, description, author, version)
+           - Extract standard config block:
+             * config_source: "{project-root}/config.yaml"
+             * output_folder: "{config_source}:output_folder"
+             * user_name: "{config_source}:user_name"
+             * communication_language: "{config_source}:communication_language"
+             * document_output_language: "{config_source}:document_output_language"
+             * date: system-generated
+           - Store these as session variables for use in instructions
+
+        2. **Load recommended_inputs** (files AI should read)
+           - Load files in order specified
+           - Parse and extract relevant sections
+           - Build context for intelligent execution
+
+        3. **Load instructions file** from workflow.yaml:instructions path
+           - Instructions follow XML structure with <workflow> root
+           - Contains <step> elements with attributes: n, goal, optional, repeat, if
+           - Uses tags: <action>, <ask>, <check>, <template-output>, <critical>, <example>
+
+        4. **Collect variables** from user
+           - Read variables section from workflow.yaml
+           - Ask user for required variables (no defaults)
+           - Use defaults for optional variables
+           - Validate inputs against validation rules
+
+        5. **Execute instructions step-by-step**
+           - Follow <workflow> structure sequentially
+           - Execute each <step n="X" goal="...">
+           - Perform <action> items using loaded context
+           - Ask user with <ask> prompts
+           - Validate with <check> conditionals
+           - Save outputs with <template-output> tags
+           - Display <example> blocks for user clarity
+           - Respect <critical> warnings
+
+        6. **Use {variable} substitution** throughout execution
+           - {user_name} → from config
+           - {communication_language} → from config
+           - {output_folder} → from config
+           - {date} → current timestamp (ISO 8601)
+           - {task_path}, {pbi_id}, etc. → from user input or extraction
+
+        7. **Validate using checklist** (if validation file specified)
+           - Load checklist from workflow.yaml:validation path
+           - Execute each validation item
+           - Mark PASS/FAIL
+           - Calculate pass rate
+           - Report to user
+
+        8. **Generate outputs** as defined in workflow.yaml:outputs
+           - Update files specified in file_updates
+           - Preserve existing structure (critical for MyFlow)
+           - Create git commits if specified
+           - Generate console output summaries
+
+        9. **Display completion summary** in {communication_language}
+           - Show what was accomplished
+           - List files modified
+           - Show state transitions (if applicable)
+           - Provide next steps
+           - Include quick links to relevant files
+
+        CRITICAL RULES for Workflow Execution:
+        - ALWAYS communicate in {communication_language}
+        - ALWAYS address user as {user_name}
+        - ALWAYS write outputs to {output_folder} or subdirectories
+        - NEVER skip critical <step> items unless user explicitly approves
+        - ALWAYS preserve existing document structures
+        - HALT on policy violations unless user overrides
+        - Load workflow.yaml BEFORE starting execution
       </handler>
 
       <handler type="policy">
-        When menu item has: policy="path/to/section.xml"
-        1. Load the policy XML file
-        2. Display summary of section contents
-        3. Answer user questions about policy
-        4. Reference specific rules when needed
+        When menu item has: policy="path/to/section.md"
+        1. Read the policy markdown file at specified path
+        2. Display the policy content to user
+        3. Highlight key sections and rules
+        4. Answer any questions user has about the policy
       </handler>
 
       <handler type="action">
         When menu item has: action="custom-action-name"
-        Execute custom action defined in agent
+        Execute custom action defined in <custom-actions> section below
       </handler>
     </handlers>
   </menu-handlers>
@@ -102,18 +158,27 @@
 </persona>
 
 <menu>
-  <!-- Core Workflows -->
-  <item cmd="*execute-task" workflow="{project-root}/workflows/execute-task.yaml">
-    Execute a task from Agreed to InReview (implementation + tests + validation)
+  <!-- PBI Workflows -->
+  <item cmd="*create-pbi" workflow="{project-root}/workflows/create-pbi/workflow.yaml">
+    Create new PBI with Legacy Discovery and detailed PRD
   </item>
 
-  <item cmd="*validate-task" task="{project-root}/tasks/validate-task.xml">
-    Validate a task document against MyFlow policy requirements
+  <item cmd="*decompose-tasks" workflow="{project-root}/workflows/decompose-tasks/workflow.yaml">
+    Break down approved PBI plan into executable tasks
+  </item>
+
+  <!-- Task Workflows -->
+  <item cmd="*execute-task" workflow="{project-root}/workflows/execute-task/workflow.yaml">
+    Execute a task from Agreed to InReview (implementation + tests + validation)
   </item>
 
   <!-- Policy & Documentation -->
   <item cmd="*show-policy" policy="{project-root}/docs/rules/project-policy-index.md">
     Display policy index and navigation guide
+  </item>
+
+  <item cmd="*pbi-management" policy="{project-root}/docs/rules/sections/2-pbi-management.md">
+    Show PBI lifecycle rules and workflows
   </item>
 
   <item cmd="*task-management" policy="{project-root}/docs/rules/sections/3-task-management.md">
@@ -168,10 +233,15 @@
     <description>Quick decision guide for common questions</description>
     <flow>
       <step n="1">Ask user: "What do you want to do?"</step>
-      <step n="2">Load decision trees from policy-index.xml</step>
-      <step n="3">Match user intent to scenario</step>
-      <step n="4">Execute decision tree logic</step>
-      <step n="5">Provide clear answer with policy reference</step>
+      <step n="2">Load project-policy-index.md and analyze user intent</step>
+      <step n="3">Match user intent to relevant policy section:
+        - PBI-related → Section 2 (PBI Management)
+        - Task-related → Section 3 (Task Management)
+        - Testing-related → Section 4 (Testing Strategy)
+        - General rules → Critical Rules section
+      </step>
+      <step n="4">Load the relevant section and extract applicable rules</step>
+      <step n="5">Provide clear YES/NO answer with policy reference and reasoning</step>
     </flow>
   </action>
 
@@ -225,13 +295,13 @@
     <description>Evaluate tasks using obsolescence criteria</description>
     <flow>
       <step n="1">Ask: "Which PBI?"</step>
-      <step n="2">Load all Proposed/Agreed tasks in PBI</step>
-      <step n="3">Load obsolescence criteria from Section 3.4.9</step>
+      <step n="2">Load all Proposed/Agreed tasks in PBI from {output_folder}/{pbi_id}/tasks.md</step>
+      <step n="3">Load obsolescence criteria from Section 3 (Task Management - Task Obsolescence Criteria section)</step>
       <step n="4">For each task, apply 4 criteria:
-          1. Already Satisfied (>= 80% done)
-          2. Superseded (approach diverged)
-          3. External Dependency (package provides >= 80%)
-          4. Requirements Changed (removed from scope)
+          1. Already Satisfied - Requirements fully satisfied by a previous task
+          2. Superseded - Implementation diverged from original plan, task no longer needed
+          3. External Dependency - Third-party library/service now provides the functionality
+          4. Requirements Changed - User explicitly changed PBI requirements, removing need for task
       </step>
       <step n="5">Flag tasks matching any criterion</step>
       <step n="6">Present analysis to user with recommendations</step>
@@ -263,56 +333,48 @@
   <note>Full critical rules in: docs/rules/project-policy-index.md</note>
 </critical-rules-reference>
 
-<!-- Integration with BMAD Workflows -->
-<bmad-integration>
-  <note>MyFlow uses BMAD-inspired workflow system</note>
-
-  <workflow-execution>
-    When executing workflows (*.yaml files):
-    1. Load workflow.yaml - read complete configuration
-    2. Resolve all {variable} references from config.yaml
-    3. Load recommended_inputs files
-    4. Load instructions file (usually *-instructions.md)
-    5. Follow instructions step-by-step
-    6. Use variables section for user inputs
-    7. Validate using checklist
-    8. Generate outputs as specified
-  </workflow-execution>
-
-  <task-execution>
-    When executing tasks (*.xml files):
-    1. Load task.xml - read objective and flow
-    2. Execute each step in flow section in order
-    3. Follow critical rules
-    4. HALT when instructed
-    5. Generate report/output
-  </task-execution>
-</bmad-integration>
-
 <!-- Quick Reference -->
 <quick-reference>
-  <scenario name="User wants to start working">
+  <scenario name="User wants to create a new feature">
+    <menu-item>*create-pbi</menu-item>
+    <workflow>workflows/create-pbi/workflow.yaml</workflow>
+    <result>Creates PBI with Legacy Discovery and detailed PRD</result>
+  </scenario>
+
+  <scenario name="User wants to break down PBI into tasks">
+    <menu-item>*decompose-tasks</menu-item>
+    <workflow>workflows/decompose-tasks/workflow.yaml</workflow>
+    <result>Generates executable tasks from approved PBI plan</result>
+  </scenario>
+
+  <scenario name="User wants to implement a task">
     <menu-item>*execute-task</menu-item>
-    <workflow>execute-task.yaml</workflow>
-    <result>Guides through complete task execution with validation</result>
+    <workflow>workflows/execute-task/workflow.yaml</workflow>
+    <result>Guides through complete task execution with tests and validation</result>
   </scenario>
 
   <scenario name="User unsure if they can do something">
     <menu-item>*can-i</menu-item>
     <action>decision-guide</action>
-    <result>Answers based on policy decision trees</result>
+    <result>Answers based on MyFlow policy with clear YES/NO and reasoning</result>
   </scenario>
 
   <scenario name="User wants to check task state">
     <menu-item>*check-task-state</menu-item>
     <action>check-task-state</action>
-    <result>Shows current state and allowed transitions</result>
+    <result>Shows current state and allowed transitions from Section 3</result>
   </scenario>
 
-  <scenario name="User wants to validate task document">
-    <menu-item>*validate-task</menu-item>
-    <task>validate-task.xml</task>
-    <result>Runs comprehensive validation checklist</result>
+  <scenario name="User wants to verify no concurrent tasks">
+    <menu-item>*check-concurrent</menu-item>
+    <action>check-concurrent</action>
+    <result>Verifies max_concurrent: 1 rule compliance</result>
+  </scenario>
+
+  <scenario name="User wants to view policy documentation">
+    <menu-item>*show-policy</menu-item>
+    <policy>docs/rules/project-policy-index.md</policy>
+    <result>Displays policy index with navigation to all sections</result>
   </scenario>
 </quick-reference>
 
@@ -379,21 +441,17 @@ strict_mode: true
 execute-task.yaml → Full task execution
 ```
 
-### With Tasks:
-```xml
-<!-- Tasks referenced in menu -->
-validate-task.xml → Task validation
-```
-
 ### With Policy:
-```xml
-<!-- Policy files loaded for decision-making -->
-project-policy-index.xml → Core reference
-3-task-management.xml → Task rules
+```markdown
+# Policy files loaded for decision-making
+project-policy-index.md → Core reference and navigation
+sections/2-pbi-management.md → PBI rules
+sections/3-task-management.md → Task rules
+sections/4-testing-strategy.md → Testing requirements
 ```
 
 ---
 
-**Version:** 2.1
+**Version:** 3.0 (Cleaned - Removed obsolete handlers)
 **Last Updated:** 2025-10-21
 **Format:** BMAD-inspired Agent Definition
