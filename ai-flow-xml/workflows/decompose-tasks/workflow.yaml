@@ -17,8 +17,8 @@ date: system-generated
 # ========================================
 # WORKFLOW COMPONENT FILES (BMAD pattern)
 # ========================================
-installed_path: "{project-root}/workflows"
-instructions: "{installed_path}/decompose-tasks-instructions.md"
+installed_path: "{project-root}/workflows/decompose-tasks"
+instructions: false
 validation: false  # No separate checklist needed
 template: false  # Action workflow
 

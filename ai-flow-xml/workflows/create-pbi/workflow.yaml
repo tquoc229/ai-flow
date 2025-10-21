@@ -17,9 +17,9 @@ date: system-generated
 # ========================================
 # WORKFLOW COMPONENT FILES (BMAD pattern)
 # ========================================
-installed_path: "{project-root}/workflows"
-instructions: "{installed_path}/create-pbi-instructions.md"
-validation: "{installed_path}/create-pbi-checklist.md"
+installed_path: "{project-root}/workflows/create-pbi"
+instructions: "{installed_path}/instructions.md"
+validation: false
 template: false  # Action workflow - creates PBI documents
 
 # ========================================

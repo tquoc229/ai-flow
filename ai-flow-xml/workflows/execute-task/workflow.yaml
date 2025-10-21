@@ -138,9 +138,9 @@ recommended_inputs:
 # WORKFLOW COMPONENT FILES (BMAD pattern)
 # ========================================
 # Path convention: use {project-root} for portability
-installed_path: "{project-root}/workflows"
-instructions: "{installed_path}/execute-task-instructions.md"
-validation: "{installed_path}/execute-task-checklist.md"
+installed_path: "{project-root}/workflows/execute-task"
+instructions: "{installed_path}/instructions.md"
+validation: "{installed_path}/checklist.md"
 template: false  # Action workflow - no template needed
 
 # ========================================
