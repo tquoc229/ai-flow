@@ -1,0 +1,285 @@
+# MyFlow Configuration
+# Version: 1.0
+# AI-Native Workflow System inspired by BMAD
+# Last Updated: 2025-10-21
+
+# ========================================
+# PROJECT INFORMATION
+# ========================================
+project:
+  name: "BMAD-METHOD-6-alpha"
+  root: "{project-root}"
+  description: "AI-powered agile workflow management system"
+
+# ========================================
+# TEAM SETTINGS
+# ========================================
+team:
+  user_name: "User"  # Customize per developer
+  communication_language: "Vietnamese"
+  document_output_language: "Vietnamese"
+  skill_level: "intermediate"  # beginner|intermediate|advanced
+
+# ========================================
+# DIRECTORY LOCATIONS
+# ========================================
+locations:
+  # Core paths
+  myflow_root: "{project-root}"
+  docs_root: "{myflow_root}/docs"
+  workflows_root: "{myflow_root}/workflows"
+
+  # Delivery paths
+  delivery_folder: "{docs_root}/delivery"
+  backlog_file: "{delivery_folder}/backlog.md"
+
+  # Rules and documentation
+  rules_folder: "{docs_root}/rules"
+  policy_index: "{rules_folder}/project-policy-index.md"
+  agents_instruction: "{myflow_root}/AGENTS.md"
+
+  # Section-specific rules (loaded on-demand by AI)
+  rules_fundamentals: "{rules_folder}/sections/1-fundamentals.md"
+  rules_pbi: "{rules_folder}/sections/2-pbi-management.md"
+  rules_task: "{rules_folder}/sections/3-task-management.md"
+  rules_testing: "{rules_folder}/sections/4-testing-strategy.md"
+  rules_quickref: "{rules_folder}/sections/5-quick-reference.md"
+
+  # Additional documentation
+  reusable_components: "{docs_root}/Reusable-Components.md"
+  api_docs: "{docs_root}/api-docs.md"
+  integration_guide: "{docs_root}/integration-guide.md"
+  codebase_structure: "{docs_root}/codebase-structure-architecture-code-standards.md"
+  project_overview: "{docs_root}/project-overview.md"
+  design_guideline: "{docs_root}/DesignGuideline.md"
+
+# ========================================
+# PBI (Product Backlog Item) CONFIGURATION
+# ========================================
+pbi:
+  # Valid states (from Section 2: PBI Management)
+  states:
+    - "Proposed"
+    - "PlanInReview"
+    - "NeedsPlanRework"
+    - "ReadyForTasks"
+    - "InProgress"
+    - "InReview"
+    - "Done"
+    - "Rejected"
+
+  # Allowed state transitions
+  transitions:
+    Proposed: ["PlanInReview"]
+    PlanInReview: ["ReadyForTasks", "NeedsPlanRework"]
+    NeedsPlanRework: ["PlanInReview"]
+    ReadyForTasks: ["InProgress"]
+    InProgress: ["InReview"]
+    InReview: ["Done", "Rejected"]
+    Rejected: ["InProgress"]
+    Done: []  # Terminal state
+
+  # File path patterns
+  pbi_folder_pattern: "{delivery_folder}/{pbi_id}"
+  prd_file_pattern: "{pbi_folder_pattern}/prd.md"
+  tasks_file_pattern: "{pbi_folder_pattern}/tasks.md"
+
+  # PBI document structure (preserve existing format)
+  document_sections:
+    required:
+      - "Overview"
+      - "User Stories"
+      - "Acceptance Criteria"
+    optional:
+      - "Problem Statement"
+      - "Technical Approach"
+      - "UX/UI Considerations"
+      - "Dependencies"
+      - "Open Questions"
+      - "Related Tasks"
+
+# ========================================
+# TASK CONFIGURATION
+# ========================================
+task:
+  # Valid states (from Section 3: Task Management)
+  states:
+    - "Proposed"
+    - "Agreed"
+    - "InProgress"
+    - "InReview"
+    - "Testing"
+    - "Blocked"
+    - "Done"
+    - "Cancelled"
+
+  # Allowed state transitions
+  transitions:
+    Proposed: ["Agreed", "Cancelled"]
+    Agreed: ["InProgress", "Cancelled"]
+    InProgress: ["InReview", "Blocked"]
+    InReview: ["Testing", "InProgress"]
+    Testing: ["Done", "InProgress"]
+    Blocked: ["InProgress", "Cancelled"]
+    Done: []  # Terminal state
+    Cancelled: []  # Terminal state
+
+  # Concurrency limit (from policy: one task at a time)
+  max_concurrent: 1
+
+  # File path pattern
+  task_file_pattern: "{delivery_folder}/{pbi_id}/{task_id}.md"
+
+  # Task document structure (preserve existing format)
+  document_sections:
+    required:
+      - "Description"
+      - "Status History"
+      - "Requirements"
+      - "Implementation Plan"
+      - "Verification"
+      - "Files Modified"
+    optional:
+      - "Implementation Notes"
+      - "Test Results"
+      - "Dependencies"
+      - "Notes"
+
+# ========================================
+# AUTOMATION SETTINGS
+# ========================================
+automation:
+  # Auto-update features
+  auto_update_backlog: true
+  auto_update_task_index: true
+  auto_generate_history: true
+  auto_load_context: true  # AI automatically loads recommended files
+
+  # Validation settings
+  validate_on_state_change: true
+  strict_mode: true  # Halt on validation failures
+  require_tests: true
+
+  # Git integration
+  auto_commit: false  # User must explicitly approve commits
+  commit_message_format: "feat({pbi_id}): {task_title}"
+  commit_include_ai_attribution: false  # No AI signatures in commits
+
+# ========================================
+# WORKFLOW SETTINGS
+# ========================================
+workflows:
+  # Execution mode
+  default_mode: "interactive"  # interactive|autonomous
+
+  # Context loading
+  always_load:
+    - "{myflow_root}/AGENTS.md"
+    - "{rules_folder}/project-policy-index.md"
+
+  # Workflow locations
+  execute_task: "{workflows_root}/execute-task.yaml"
+  create_pbi: "{workflows_root}/create-pbi.yaml"
+  transition_task: "{workflows_root}/transition-task.yaml"
+  transition_pbi: "{workflows_root}/transition-pbi.yaml"
+  generate_tasks: "{workflows_root}/generate-tasks.yaml"
+
+# ========================================
+# TESTING CONFIGURATION
+# ========================================
+testing:
+  # Test commands
+  test_command: "auto"  # auto-detect from package.json
+  test_framework: "auto"  # jest|vitest|mocha|auto
+
+  # Test requirements by task complexity
+  proportionality:
+    simple:
+      unit_tests: "optional"
+      integration_tests: "not_required"
+      e2e_tests: "not_required"
+    medium:
+      unit_tests: "required"
+      integration_tests: "optional"
+      e2e_tests: "not_required"
+    complex:
+      unit_tests: "required"
+      integration_tests: "required"
+      e2e_tests: "optional"
+
+  # Coverage requirements
+  coverage:
+    enabled: true
+    minimum: 70  # percentage
+    strict: false  # don't block on coverage failure
+
+# ========================================
+# AI AGENT SETTINGS
+# ========================================
+ai_agent:
+  # Primary instructions
+  primary_directive: "{myflow_root}/AGENTS.md"
+
+  # Behavior settings
+  ask_before_major_changes: true
+  show_context_summary: true
+  verbose_logging: true
+
+  # Elicitation (AI suggestions)
+  enable_elicitation: true
+  suggestion_count: 3  # Number of approaches to suggest
+
+  # Error handling
+  halt_on_policy_violation: true
+  halt_on_test_failure: true  # in strict mode
+  allow_override: true  # User can override after warning
+
+# ========================================
+# DATE/TIME SETTINGS
+# ========================================
+datetime:
+  format: "ISO8601"  # YYYY-MM-DDTHH:mm:ssZ
+  timezone: "UTC"
+  include_in_history: true
+
+# ========================================
+# VALIDATION RULES
+# ========================================
+validation:
+  # PBI validation
+  pbi_requires_acceptance_criteria: true
+  pbi_requires_user_story: true
+
+  # Task validation
+  task_requires_requirements: true
+  task_requires_verification: true
+  task_requires_implementation_plan: true
+
+  # State transition validation
+  enforce_state_transitions: true
+  log_all_transitions: true
+  require_history_entry: true
+
+# ========================================
+# NOTES FOR AI AGENTS
+# ========================================
+# Dear AI Agent:
+#
+# This config file is your central source of truth for MyFlow.
+# When executing workflows:
+#
+# 1. Reference paths using {variable} substitution
+#    Example: {delivery_folder}/{pbi_id}/prd.md
+#
+# 2. Always respect state transitions defined in this config
+#
+# 3. Load files from 'workflows.always_load' at the start
+#
+# 4. Follow automation settings (strict_mode, validation, etc.)
+#
+# 5. Preserve document structures defined in document_sections
+#
+# 6. Use this config to validate user requests against policy
+#
+# Happy workflow execution! 🚀
+# ========================================

@@ -1,0 +1,330 @@
+name: execute-task
+description: "Execute MyFlow task from Agreed to InReview - AI-native workflow"
+version: "1.0"
+author: "MyFlow"
+
+# ========================================
+# 🤖 AI AGENT INSTRUCTIONS
+# ========================================
+# Dear AI Agent (Claude, GPT, or any AI assistant):
+#
+# 1. READ this entire YAML file first to understand the workflow
+# 2. LOAD all files listed in 'recommended_inputs' section
+# 3. READ the instructions file for step-by-step guidance
+# 4. FOLLOW the instructions while respecting 'critical_rules'
+# 5. ASK user for any missing variables
+# 6. PRESERVE existing document structures - only update Status History and append notes
+# 7. HALT on policy violations unless user explicitly overrides
+#
+# This workflow helps you execute tasks following MyFlow policy.
+# The instructions are written in human-readable format for you to follow.
+# ========================================
+
+# Configuration reference
+config_source: "{project-root}/config.yaml"
+
+# ========================================
+# CRITICAL RULES (AI MUST FOLLOW)
+# ========================================
+critical_rules:
+  - "NEVER modify task document structure - only update Status History table and append Implementation Notes"
+  - "ALWAYS check max_concurrent: 1 rule before starting (only 1 task can be InProgress at a time)"
+  - "Task MUST be in 'Agreed' state to execute - halt if not"
+  - "ALWAYS load AGENTS.md first for primary directive and critical rules"
+  - "Follow instructions sequentially unless explicitly told to skip"
+  - "Halt on policy violations in strict mode (can be overridden by user)"
+  - "All state transitions must be logged in Status History table with timestamp"
+  - "Preserve all existing content - never delete or restructure"
+
+# ========================================
+# FILES AI SHOULD READ (in this order)
+# ========================================
+recommended_inputs:
+  # Phase 1: Load core context (ALWAYS)
+  core_context:
+    - path: "AGENTS.md"
+      purpose: "Primary directive, critical rules, and AI behavior guidelines"
+      required: true
+      when: "always"
+
+    - path: "config.yaml"
+      purpose: "Central configuration - states, transitions, automation settings"
+      required: true
+      when: "always"
+
+    - path: "docs/rules/project-policy-index.md"
+      purpose: "Policy overview and navigation to detailed sections"
+      required: true
+      when: "always"
+
+  # Phase 2: Load workflow-specific context
+  workflow_context:
+    - path: "docs/rules/sections/3-task-management.md"
+      purpose: "Task workflow states, transitions, and rules"
+      required: true
+      when: "always"
+
+    - path: "{task_path}"
+      purpose: "Task details to execute (Description, Requirements, Implementation Plan, Verification)"
+      required: true
+      when: "always"
+      note: "task_path is a variable - ask user if not provided"
+
+    - path: "docs/delivery/{pbi_id}/prd.md"
+      purpose: "Parent PBI context (Overview, Technical Approach, Acceptance Criteria)"
+      required: true
+      when: "always"
+      note: "pbi_id can be extracted from task_path or asked from user"
+
+    - path: "docs/delivery/{pbi_id}/tasks.md"
+      purpose: "Task index - check for concurrent InProgress tasks"
+      required: true
+      when: "always"
+
+  # Phase 3: Load supporting documentation (as needed)
+  supporting_docs:
+    - path: "docs/rules/sections/4-testing-strategy.md"
+      purpose: "Testing principles, test plan requirements, coverage guidelines"
+      required: false
+      when: "if task involves tests"
+
+    - path: "docs/codebase-structure-architecture-code-standards.md"
+      purpose: "Project architecture and coding standards"
+      required: false
+      when: "if implementing new code"
+
+    - path: "docs/delivery/backlog.md"
+      purpose: "Full backlog for context (optional)"
+      required: false
+      when: "if needed for broader context"
+
+# ========================================
+# INSTRUCTIONS FOR AI TO FOLLOW
+# ========================================
+instructions_file: "workflows/execute-task-instructions.md"
+validation_checklist: "workflows/execute-task-checklist.md"
+
+# ========================================
+# VARIABLES (AI should ask user if not provided)
+# ========================================
+variables:
+  # Required variables
+  required:
+    - name: "task_path"
+      description: "Full path to the task markdown file"
+      example: "docs/delivery/14/14-1.md"
+      auto_extract:
+        - name: "pbi_id"
+          pattern: "Extract from path: delivery/{pbi_id}/{task_id}.md"
+        - name: "task_id"
+          pattern: "Extract from path: delivery/{pbi_id}/{task_id}.md"
+      validation:
+        - "File must exist"
+        - "Must be in docs/delivery/ folder"
+        - "Must follow pattern: {pbi_id}/{task_id}.md"
+
+  # Optional variables (have defaults)
+  optional:
+    - name: "run_tests"
+      description: "How to run tests during execution"
+      default: "auto"
+      options:
+        - value: "auto"
+          description: "Auto-detect test command from package.json and run automatically"
+        - value: "manual"
+          description: "Prompt user to run tests manually"
+        - value: "skip"
+          description: "Skip test execution (not recommended)"
+
+    - name: "strict_mode"
+      description: "Halt on validation failures and test failures"
+      default: true
+      type: "boolean"
+      note: "Loaded from config.yaml, can be overridden"
+
+    - name: "auto_commit"
+      description: "Automatically create git commit after completion"
+      default: false
+      type: "boolean"
+      note: "If false, will ask user before committing"
+
+    - name: "verbose"
+      description: "Show detailed progress and context summaries"
+      default: true
+      type: "boolean"
+
+# ========================================
+# EXECUTION SETTINGS
+# ========================================
+execution:
+  mode: "interactive"           # AI will pause and ask user at decision points
+  strict: true                  # Halt on validation failures (from config)
+  auto_load_context: true       # AI automatically loads all recommended_inputs
+  show_context_summary: true    # Display summary after loading context
+  enable_elicitation: true      # AI suggests implementation approaches
+  halt_on_policy_violation: true
+  allow_user_override: true     # User can override warnings
+
+# ========================================
+# EXPECTED OUTPUTS (What AI will produce)
+# ========================================
+outputs:
+  file_updates:
+    - target: "{task_path}"
+      description: "Task markdown file"
+      changes:
+        - "Add new row to Status History table (Agreed → InProgress)"
+        - "Add new row to Status History table (InProgress → InReview)"
+        - "Append Implementation Notes section at the end"
+      preserve: "All existing sections and structure"
+
+    - target: "docs/delivery/{pbi_id}/tasks.md"
+      description: "Task index file"
+      changes:
+        - "Update Status column from 'Agreed' to 'InProgress'"
+        - "Update Status column from 'InProgress' to 'InReview'"
+
+    - target: "docs/delivery/backlog.md"
+      description: "Backlog file (if auto_update_backlog enabled)"
+      changes:
+        - "Update task status to reflect current state"
+      conditional: "Only if automation.auto_update_backlog: true in config"
+
+  console_output:
+    - type: "context_summary"
+      format: "markdown"
+      content: "Display loaded context (task, PBI, requirements, files to modify)"
+
+    - type: "progress_updates"
+      format: "markdown"
+      content: "Step-by-step progress as AI follows instructions"
+
+    - type: "completion_summary"
+      format: "markdown"
+      content: "Final summary with files modified, tests results, commit hash"
+
+  git_commit:
+    conditional: "If auto_commit: true OR user approves"
+    format: "feat({pbi_id}): {task_title}"
+    include_details: true
+    no_ai_attribution: true  # Per config: no AI signatures
+
+# ========================================
+# SUCCESS CRITERIA (AI should verify all)
+# ========================================
+success_criteria:
+  state_transitions:
+    - "Task transitioned from 'Agreed' to 'InProgress' with history entry"
+    - "Task transitioned from 'InProgress' to 'InReview' with history entry"
+
+  implementation:
+    - "All requirements from task file implemented"
+    - "All files listed in 'Files Modified' section actually modified"
+    - "Implementation notes appended to task file"
+
+  testing:
+    - "Tests written for new functionality (if applicable)"
+    - "Tests executed and passing (or failures documented)"
+    - "Test results documented in implementation notes"
+
+  validation:
+    - "All verification steps from task file executed"
+    - "All items in validation checklist checked"
+
+  policy_compliance:
+    - "No other tasks left in 'InProgress' state (max_concurrent: 1)"
+    - "All state transitions are valid per config"
+    - "History entries include timestamp and user"
+
+  documentation:
+    - "Task document structure preserved"
+    - "Implementation notes complete and clear"
+    - "Task index updated"
+    - "Backlog updated (if enabled)"
+
+# ========================================
+# REQUIRED TOOLS (AI needs these capabilities)
+# ========================================
+required_tools:
+  - tool: "read_file"
+    purpose: "To read task details, PBI context, policy rules, and configuration"
+    usage: "Frequent - will read 5-10 files per execution"
+
+  - tool: "write_file"
+    purpose: "To update task status and append implementation notes"
+    usage: "Moderate - will update 2-3 files per execution"
+    note: "Use Edit tool for precise updates to existing files"
+
+  - tool: "bash"
+    purpose: "To run tests, check git status, create commits"
+    usage: "Conditional - only if tests or git operations needed"
+
+# ========================================
+# ERROR HANDLING
+# ========================================
+error_handling:
+  precondition_failures:
+    - condition: "Task not in 'Agreed' state"
+      action: "HALT and guide user to transition task first"
+
+    - condition: "Another task is InProgress"
+      action: "HALT and list active tasks - user must complete or cancel them"
+
+    - condition: "Task file not found"
+      action: "HALT and ask user to verify task path"
+
+  execution_failures:
+    - condition: "Tests fail in strict mode"
+      action: "Mark task as 'Blocked', document failures, HALT"
+      user_options: ["Fix implementation", "Fix tests", "Override strict mode"]
+
+    - condition: "Verification step fails"
+      action: "Document failure, ask user how to proceed"
+      user_options: ["Fix issue", "Skip verification (not recommended)", "Cancel execution"]
+
+  user_cancellation:
+    - condition: "User cancels mid-execution"
+      action: "Keep task in 'InProgress', document current progress, allow resume later"
+
+# ========================================
+# WORKFLOW METADATA
+# ========================================
+metadata:
+  workflow_type: "action"  # Does not create new document, modifies existing
+  interactive: true
+  estimated_duration: "30-120 minutes (depends on task complexity)"
+  can_be_resumed: true
+  requires_user_approval: true  # At multiple decision points
+
+# ========================================
+# RELATED WORKFLOWS
+# ========================================
+related_workflows:
+  - name: "transition-task"
+    path: "workflows/transition-task.yaml"
+    use_when: "Need to change task state without full execution"
+
+  - name: "create-pbi"
+    path: "workflows/create-pbi.yaml"
+    use_when: "Need to create a new PBI"
+
+  - name: "generate-tasks"
+    path: "workflows/generate-tasks.yaml"
+    use_when: "Need to break down PBI into tasks"
+
+# ========================================
+# NOTES FOR AI
+# ========================================
+# Additional guidance for AI agents:
+#
+# - This workflow is designed to be READ and UNDERSTOOD by AI, not executed by a script
+# - Follow the instructions.md file as a guideline, not rigid commands
+# - Use your intelligence to adapt to specific situations
+# - Always prioritize user intent over strict procedure
+# - When in doubt, ask the user rather than assuming
+# - Be transparent about what you're doing and why
+# - Document all changes thoroughly
+# - Respect the existing document structure - it's battle-tested
+#
+# Good luck! 🚀
+# ========================================

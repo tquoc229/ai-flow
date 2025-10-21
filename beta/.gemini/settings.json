@@ -1,0 +1,16 @@
+{
+  "context": {
+    "fileName": ["AGENTS.md", "GEMINI.md"]
+  },
+  "toolPermissions": {
+    "alwaysAllow": [
+      "read_file",
+      "list_directory",
+      "web_search",
+      "write_file",
+      "resolve-library-id",
+      "git",
+      "WebFetch"
+    ]
+  }
+}

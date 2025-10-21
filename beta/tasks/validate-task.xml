@@ -1,0 +1,413 @@
+<task tasks/validate-task.xml" name="Validate Task Document">
+  <objective>Validate a task document against MyFlow policy requirements and generate validation report</objective>
+
+  <inputs>
+    <input name="task_path" required="true">
+      <desc>Path to task markdown file to validate</desc>
+      <example>myflow/docs/delivery/14/14-1.md</example>
+    </input>
+
+    <input name="report_output" required="false">
+      <desc>Where to save validation report (defaults to task folder)</desc>
+      <default>{task_folder}/validation-report-{task_id}-{timestamp}.md</default>
+    </input>
+  </inputs>
+
+  <!-- ========================================
+       VALIDATION CHECKLIST
+       ======================================== -->
+
+  <validation-checklist>
+
+    <category name="Document Structure">
+      <item n="1.1" critical="true">
+        <requirement>File exists at specified path</requirement>
+        <check>Path is valid and file is readable</check>
+      </item>
+
+      <item n="1.2" critical="true">
+        <requirement>Title format correct: # {task_id} {Task Title}</requirement>
+        <check>First line matches pattern</check>
+      </item>
+
+      <item n="1.3" critical="true">
+        <requirement>All required sections present</requirement>
+        <required-sections>
+          <section>## Description</section>
+          <section>## Status History</section>
+          <section>## Requirements</section>
+          <section>## Implementation Plan</section>
+          <section>## Verification</section>
+          <section>## Files Modified</section>
+        </required-sections>
+      </item>
+    </category>
+
+    <category name="Status History">
+      <item n="2.1" critical="true">
+        <requirement>Status History table exists and properly formatted</requirement>
+        <check>Markdown table with correct headers</check>
+        <headers>| Timestamp | Event Type | From Status | To Status | Details | User |</headers>
+      </item>
+
+      <item n="2.2" critical="true">
+        <requirement>At least one history entry exists</requirement>
+        <check>Table has at least one data row</check>
+      </item>
+
+      <item n="2.3">
+        <requirement>Timestamps use ISO 8601 format</requirement>
+        <check>Format: YYYY-MM-DDTHH:mm:ssZ</check>
+        <example>2025-10-21T14:30:00Z</example>
+      </item>
+
+      <item n="2.4">
+        <requirement>State transitions are valid</requirement>
+        <check>Transitions follow allowed paths from Section 3.4</check>
+        <allowed-transitions>
+          <from state="Proposed">to Agreed or Cancelled</from>
+          <from state="Agreed">to InProgress or Cancelled</from>
+          <from state="InProgress">to InReview or Blocked</from>
+          <from state="InReview">to Testing or InProgress</from>
+          <from state="Testing">to Done or InProgress</from>
+          <from state="Blocked">to InProgress or Cancelled</from>
+        </allowed-transitions>
+      </item>
+
+      <item n="2.5" critical="true">
+        <requirement>Current status matches last history entry</requirement>
+        <check>Most recent entry's "To Status" is authoritative</check>
+      </item>
+    </category>
+
+    <category name="Requirements">
+      <item n="3.1" critical="true">
+        <requirement>Requirements section is non-empty</requirement>
+        <check>At least one requirement listed</check>
+      </item>
+
+      <item n="3.2">
+        <requirement>Requirements are specific and testable</requirement>
+        <check>Each requirement is clear and can be verified</check>
+      </item>
+
+      <item n="3.3">
+        <requirement>Requirements align with parent PBI</requirement>
+        <check>Compare with PBI acceptance criteria</check>
+      </item>
+    </category>
+
+    <category name="Implementation Plan">
+      <item n="4.1" critical="true">
+        <requirement>Implementation Plan section is non-empty</requirement>
+        <check>Contains information about how to implement</check>
+      </item>
+
+      <item n="4.2">
+        <requirement>Files to modify are listed</requirement>
+        <check>Specific file paths mentioned</check>
+      </item>
+
+      <item n="4.3">
+        <requirement>Plan matches Files Modified section</requirement>
+        <check>Files in plan appear in Files Modified list</check>
+      </item>
+    </category>
+
+    <category name="Verification">
+      <item n="5.1" critical="true">
+        <requirement>Verification section is non-empty</requirement>
+        <check>Contains verification steps</check>
+      </item>
+
+      <item n="5.2">
+        <requirement>Verification steps are specific and actionable</requirement>
+        <check>Each step describes HOW to verify</check>
+      </item>
+
+      <item n="5.3">
+        <requirement>Verification covers all requirements</requirement>
+        <check>Each requirement has corresponding verification</check>
+      </item>
+    </category>
+
+    <category name="Policy Compliance">
+      <item n="6.1" critical="true">
+        <requirement>Task has parent PBI reference</requirement>
+        <check>PBI ID can be derived from task path or content</check>
+      </item>
+
+      <item n="6.2">
+        <requirement>If InProgress, no other tasks InProgress in same PBI</requirement>
+        <check>Max concurrency: 1 rule</check>
+      </item>
+
+      <item n="6.3">
+        <requirement>All state transitions are logged</requirement>
+        <check>No missing history entries for state changes</check>
+      </item>
+
+      <item n="6.4">
+        <requirement>If Done, Implementation Notes section exists</requirement>
+        <check>Completed tasks have implementation documentation</check>
+      </item>
+    </category>
+
+  </validation-checklist>
+
+  <!-- ========================================
+       EXECUTION FLOW
+       ======================================== -->
+
+  <flow>
+
+    <step n="1" title="Load and Parse Task">
+      <action>Read task file from {task_path}</action>
+      <action>Parse markdown structure</action>
+      <action>Extract task_id from path or title</action>
+      <action>Extract pbi_id from path</action>
+      <halt-if>File not found or not readable</halt-if>
+    </step>
+
+    <step n="2" title="Load Parent PBI for Context">
+      <action>Derive PBI path: myflow/docs/delivery/{pbi_id}/prd.md</action>
+      <action>Read parent PBI document</action>
+      <action>Extract PBI acceptance criteria for comparison</action>
+      <note>Continue even if PBI not found - mark items as N/A</note>
+    </step>
+
+    <step n="3" title="Load Task Index for Concurrency Check">
+      <action>Read task index: myflow/docs/delivery/{pbi_id}/tasks.md</action>
+      <action>Count tasks with InProgress status</action>
+      <note>Used for max_concurrent: 1 validation</note>
+    </step>
+
+    <step n="4" title="Run Validation Checklist">
+      <mandate critical="true">For EVERY item in validation checklist, WITHOUT SKIPPING ANY:</mandate>
+
+      <for-each-category>
+        <for-each-item>
+          <action>Read requirement carefully</action>
+          <action>Execute check logic</action>
+          <action>Search document for evidence (quotes with line numbers)</action>
+          <action>Analyze result</action>
+
+          <mark-as>
+            <option>✓ PASS - Requirement fully met (provide evidence)</option>
+            <option>⚠ PARTIAL - Some coverage but incomplete (explain gaps)</option>
+            <option>✗ FAIL - Not met or severely deficient (explain why)</option>
+            <option>➖ N/A - Not applicable to this task (explain reason)</option>
+          </mark-as>
+        </for-each-item>
+      </for-each-category>
+
+      <critical>DO NOT SKIP ANY ITEMS - validate EVERYTHING</critical>
+    </step>
+
+    <step n="5" title="Generate Validation Report">
+      <action>Create report file at {report_output}</action>
+
+      <report-format># Task Validation Report
+
+**Task:** {task_id} - {task_title}
+**Task Path:** {task_path}
+**PBI:** {pbi_id}
+**Validation Date:** {ISO8601 timestamp}
+**Validator:** MyFlow Validation Engine v1.0
+
+---
+
+## Summary
+
+**Overall Result:** {PASS/FAIL/PARTIAL}
+
+| Category | Pass Rate | Critical Issues |
+|----------|-----------|-----------------|
+| Document Structure | {x}/{y} ({z}%) | {count} |
+| Status History | {x}/{y} ({z}%) | {count} |
+| Requirements | {x}/{y} ({z}%) | {count} |
+| Implementation Plan | {x}/{y} ({z}%) | {count} |
+| Verification | {x}/{y} ({z}%) | {count} |
+| Policy Compliance | {x}/{y} ({z}%) | {count} |
+
+**Total:** {passed}/{total} items ({percentage}%)
+**Critical Failures:** {count}
+
+---
+
+## Detailed Results
+
+### Category 1: Document Structure
+
+Pass Rate: {x}/{y} ({z}%)
+
+{For each item:}
+**[MARK] Item {n}: {requirement}**
+
+Evidence: {quote from line X} or {explanation}
+
+{If FAIL or PARTIAL:}
+Impact: {why this matters}
+Recommendation: {how to fix}
+
+---
+
+### Category 2: Status History
+
+{Same format...}
+
+---
+
+## Failed Items (Must Fix)
+
+{List all ✗ items with:}
+- What failed
+- Why it's important
+- How to fix
+- Line numbers for reference
+
+---
+
+## Partial Items (Should Improve)
+
+{List all ⚠ items with:}
+- What's incomplete
+- What's missing
+- Recommendation
+
+---
+
+## Recommendations
+
+### Must Fix (Critical)
+1. {critical issue with fix}
+2. {critical issue with fix}
+
+### Should Improve (Important)
+1. {important issue with fix}
+2. {important issue with fix}
+
+### Consider (Minor)
+1. {minor issue with fix}
+
+---
+
+## Next Steps
+
+{IF overall PASS:}
+✅ Task document is compliant with MyFlow policy.
+Ready to execute if in Agreed state.
+
+{IF overall FAIL:}
+❌ Task document has critical issues that must be resolved.
+Fix failed items before proceeding with task execution.
+
+{IF overall PARTIAL:}
+⚠️ Task document is mostly compliant but has some gaps.
+Recommended to fix partial items for best quality.
+
+---
+
+**Validation Complete**
+</report-format>
+    </step>
+
+    <step n="6" title="Display Summary to User">
+      <action>Present high-level summary</action>
+
+      <output>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 TASK VALIDATION COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Task: {task_id} - {task_title}
+
+Overall Result: {✅ PASS / ⚠️ PARTIAL / ❌ FAIL}
+
+Category Results:
+- Document Structure: {x}/{y} ✓
+- Status History: {x}/{y} ✓
+- Requirements: {x}/{y} ✓
+- Implementation Plan: {x}/{y} ✓
+- Verification: {x}/{y} ✓
+- Policy Compliance: {x}/{y} ✓
+
+Total: {passed}/{total} items ({percentage}%)
+
+{IF critical failures:}
+❌ Critical Issues: {count}
+{list critical issues}
+{END IF}
+
+{IF partial items:}
+⚠️ Partial Items: {count}
+{list partial items}
+{END IF}
+
+Full report saved to:
+{report_output}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</output>
+
+      <action>HALT - wait for user to review report</action>
+    </step>
+
+  </flow>
+
+  <!-- ========================================
+       CRITICAL RULES
+       ======================================== -->
+
+  <critical-rules>
+    <rule>NEVER skip validation items - check EVERYTHING</rule>
+    <rule>ALWAYS provide evidence (quotes + line numbers) for marks</rule>
+    <rule>Think deeply about each requirement - don't rush</rule>
+    <rule>Save report to task folder automatically</rule>
+    <rule>HALT after presenting summary - wait for user review</rule>
+    <rule>Be thorough - quality validation prevents issues later</rule>
+  </critical-rules>
+
+  <!-- ========================================
+       USAGE EXAMPLES
+       ======================================== -->
+
+  <usage-examples>
+
+    <example n="1" scenario="Validate task before execution">
+      <user-request>Validate task 14-1 before I start working on it</user-request>
+
+      <ai-execution>
+        <step>Read: myflow/tasks/validate-task.xml (this file)</step>
+        <step>Load task: myflow/docs/delivery/14/14-1.md</step>
+        <step>Run validation checklist (all items)</step>
+        <step>Generate report: myflow/docs/delivery/14/validation-report-14-1-{timestamp}.md</step>
+        <step>Display summary to user</step>
+        <result>✅ PASS - Task is ready for execution</result>
+      </ai-execution>
+    </example>
+
+    <example n="2" scenario="Validate task after completion">
+      <user-request>Validate task 14-2 after implementation</user-request>
+
+      <ai-execution>
+        <step>Load task with Implementation Notes section</step>
+        <step>Verify all requirements implemented</step>
+        <step>Check Implementation Notes exist (required for Done state)</step>
+        <step>Validate test results documented</step>
+        <result>✅ PASS - Task complete and documented properly</result>
+      </ai-execution>
+    </example>
+
+    <example n="3" scenario="Catch policy violation">
+      <user-request>Validate task 14-3</user-request>
+
+      <ai-execution>
+        <step>Check concurrency: Task 14-2 is already InProgress</step>
+        <step>Current task 14-3 is also InProgress</step>
+        <result>❌ FAIL - Violates max_concurrent: 1 policy</result>
+        <recommendation>Complete or cancel task 14-2 before starting 14-3</recommendation>
+      </ai-execution>
+    </example>
+
+  </usage-examples>
+
+</task>
