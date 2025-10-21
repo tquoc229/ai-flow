@@ -18,7 +18,7 @@
 
 ## PBI Workflow States
 
-The PBI lifecycle is defined by states in `config.yaml` → `pbi.states`.
+The PBI lifecycle is defined by states in `ai-flow-config.yaml` → `pbi.states`.
 
 | State | Description | What It Means |
 |-------|-------------|---------------|
@@ -51,7 +51,7 @@ The PBI lifecycle is defined by states in `config.yaml` → `pbi.states`.
 
 ## Valid State Transitions
 
-Defined in `config.yaml` → `pbi.transitions`:
+Defined in `ai-flow-config.yaml` → `pbi.transitions`:
 
 | From | To | Trigger |
 |------|-----|---------|
@@ -116,7 +116,7 @@ Defined in `config.yaml` → `pbi.transitions`:
 **Core Principles:**
 - Single source of truth for all PBIs
 - Ordered by priority (manual reordering allowed)
-- Valid status values from `config.yaml`
+- Valid status values from `ai-flow-config.yaml`
 
 ### PRD File (`{pbi_id}/prd.md`)
 

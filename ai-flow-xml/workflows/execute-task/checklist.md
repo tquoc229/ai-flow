@@ -10,7 +10,7 @@
 ### Context Loading ✓
 
 - [ ] **AGENTS.md loaded** - Primary directive and critical rules understood
-- [ ] **config.yaml loaded** - Central configuration understood
+- [ ] **ai-flow-config.yaml loaded** - Central configuration understood
 - [ ] **Project policy index loaded** - Policy overview understood
 - [ ] **Section 3 (Task Management) loaded** - Task workflow rules understood
 - [ ] **Task file loaded** - Requirements, implementation plan, verification steps extracted

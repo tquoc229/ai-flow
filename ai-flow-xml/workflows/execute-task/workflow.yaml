@@ -6,10 +6,10 @@ author: "MyFlow Team"
 # ========================================
 # STANDARD CONFIG BLOCK (BMAD-inspired)
 # ========================================
-# These variables are automatically pulled from central config.yaml
+# These variables are automatically pulled from central ai-flow-config.yaml
 # AI can use them directly in instructions with {variable} syntax
 
-config_source: "{project-root}/config.yaml"
+config_source: "{project-root}/ai-flow-config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -58,7 +58,7 @@ recommended_inputs:
       required: true
       when: "always"
 
-    - path: "config.yaml"
+    - path: "ai-flow-config.yaml"
       purpose: "Central configuration - states, transitions, automation settings"
       required: true
       when: "always"
@@ -179,7 +179,7 @@ variables:
       description: "Halt on validation failures and test failures"
       default: true
       type: "boolean"
-      note: "Loaded from config.yaml, can be overridden"
+      note: "Loaded from ai-flow-config.yaml, can be overridden"
 
     - name: "auto_commit"
       description: "Automatically create git commit after completion"

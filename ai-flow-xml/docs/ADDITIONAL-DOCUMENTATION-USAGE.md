@@ -49,7 +49,7 @@ These files are defined in `config.yaml` under `locations:` section.
 ```yaml
 core_context:
   - AGENTS.md              # Primary directive
-  - config.yaml            # Configuration
+  - ai-flow-config.yaml            # Configuration
   - project-policy-index.md # Policy overview
 ```
 
@@ -452,7 +452,7 @@ Before marking task complete, AI should verify:
 
 ## Related Files
 
-- `config.yaml` - Defines all documentation paths
+- `ai-flow-config.yaml` - Defines all documentation paths
 - `workflows/create-pbi/workflow.yaml` - Uses during Legacy Discovery
 - `workflows/execute-task/workflow.yaml` - Uses during implementation
 - `AGENTS.md` - Primary directive

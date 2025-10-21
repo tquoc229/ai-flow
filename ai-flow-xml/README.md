@@ -19,7 +19,7 @@ Unlike traditional project management tools, MyFlow is designed to be **read and
 ## 🏗️ System Architecture
 
 ```
-├── config.yaml                          # 🎛️ Central configuration
+├── ai-flow-config.yaml                          # 🎛️ Central configuration
 ├── AGENTS.md                            # 🤖 AI agent instructions
 │
 ├── workflows/                           # 📋 AI-executable workflows
@@ -197,7 +197,7 @@ User: Execute task 14-1
 AI: I'll execute task 14-1 following the MyFlow workflow.
 
 [AI reads workflow.yaml]
-[AI loads context from AGENTS.md, config.yaml, policy, PBI, task file]
+[AI loads context from AGENTS.md, ai-flow-config.yaml, policy, PBI, task file]
 [AI validates preconditions]
 
 ✅ PRECONDITIONS CHECK
@@ -219,7 +219,7 @@ Task 14-1 is now InReview and ready for code review.
 
 ## ⚙️ Configuration
 
-### config.yaml
+### ai-flow-config.yaml
 
 Central configuration file containing:
 
@@ -329,7 +329,7 @@ instructions_file: "execute-task-instructions.md"
 
 AI automatically loads:
 1. ✅ AGENTS.md (primary directive)
-2. ✅ config.yaml (configuration)
+2. ✅ ai-flow-config.yaml (configuration)
 3. ✅ Project policy (rules)
 4. ✅ Task file (requirements)
 5. ✅ Parent PBI (context)
@@ -535,7 +535,7 @@ User: Mark task 14-1 as Done
 
 **Solution:** Fix tests or disable strict mode
 ```yaml
-# In config.yaml
+# In ai-flow-config.yaml
 automation:
   strict_mode: false  # Temporarily allow test failures
 ```
@@ -545,7 +545,7 @@ automation:
 ## 📖 Related Documentation
 
 - **[AGENTS.md](./AGENTS.md)** - Primary AI agent instructions
-- **[config.yaml](./config.yaml)** - Central configuration
+- **[ai-flow-config.yaml](./ai-flow-config.yaml)** - Central configuration
 - **[Project Policy Index](./docs/rules/project-policy-index.md)** - Complete policy documentation
 - **[Task Management Rules](./docs/rules/sections/3-task-management.md)** - Task workflow details
 - **[Testing Strategy](./docs/rules/sections/4-testing-strategy.md)** - Testing guidelines

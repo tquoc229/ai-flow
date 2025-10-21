@@ -27,7 +27,7 @@ Test requirements scale with task complexity.
 | **Medium** | Required | Optional | Not Required | 70%+ |
 | **Complex** | Required | Required | Optional | 80%+ |
 
-**Configuration:** `config.yaml` → `testing.proportionality`
+**Configuration:** `ai-flow-config.yaml` → `testing.proportionality`
 
 ### How to Determine Complexity
 
@@ -53,7 +53,7 @@ Test requirements scale with task complexity.
 
 ## Coverage Requirements
 
-From `config.yaml` → `testing.coverage`:
+From `ai-flow-config.yaml` → `testing.coverage`:
 
 ```yaml
 coverage:
@@ -181,7 +181,7 @@ Every task must document:
 
 ### Auto-Detection
 
-From `config.yaml` → `testing.test_command`:
+From `ai-flow-config.yaml` → `testing.test_command`:
 
 ```yaml
 test_command: "auto"  # Auto-detect from package.json
@@ -213,7 +213,7 @@ test_command: "auto"  # Auto-detect from package.json
 
 ### Strict Mode
 
-From `config.yaml` → `automation.halt_on_test_failure`:
+From `ai-flow-config.yaml` → `automation.halt_on_test_failure`:
 
 ```yaml
 halt_on_test_failure: true

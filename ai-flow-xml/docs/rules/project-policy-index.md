@@ -256,7 +256,7 @@ Before marking task as InReview:
 
 **Startup (ALWAYS load):**
 1. `AGENTS.md` - Primary directive
-2. `config.yaml` - Configuration
+2. `ai-flow-config.yaml` - Configuration
 3. `project-policy-index.md` (this file) - Overview
 
 **On-Demand (load when needed):**
@@ -290,7 +290,7 @@ Before marking task as InReview:
 - [Execute Task](../../workflows/execute-task/)
 
 ### Configuration
-- [config.yaml](../../config.yaml) - Central configuration
+- [ai-flow-config.yaml](../../ai-flow-config.yaml) - Central configuration
 - [AGENTS.md](../../AGENTS.md) - AI agent directive
 
 ---

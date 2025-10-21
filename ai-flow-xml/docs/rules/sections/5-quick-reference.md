@@ -281,7 +281,7 @@
     <action>
         Use this Git workflow for task completion:
         ```bash
-        # When task moves to Done status, use the format from config.yaml:
+        # When task moves to Done status, use the format from ai-flow-config.yaml:
         # {automation.commit_message_format}
 
         # Option 1: Using automation helper

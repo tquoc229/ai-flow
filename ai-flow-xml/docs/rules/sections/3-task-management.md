@@ -18,7 +18,7 @@
 
 ## Task Workflow States
 
-The task lifecycle is defined by states in `config.yaml` → `task.states`.
+The task lifecycle is defined by states in `ai-flow-config.yaml` → `task.states`.
 
 | State | Description |
 |-------|-------------|
@@ -53,7 +53,7 @@ The task lifecycle is defined by states in `config.yaml` → `task.states`.
 
 ## Valid State Transitions
 
-Defined in `config.yaml` → `task.transitions`:
+Defined in `ai-flow-config.yaml` → `task.transitions`:
 
 | From | To | Trigger |
 |------|-----|---------|
@@ -80,7 +80,7 @@ Defined in `config.yaml` → `task.transitions`:
 
 **Maximum {task.max_concurrent} task(s) InProgress per PBI at any time.**
 
-Default: `1` (configured in `config.yaml`)
+Default: `1` (configured in `ai-flow-config.yaml`)
 
 **Enforcement:**
 - Before starting a task, AI MUST check for other InProgress tasks
@@ -234,7 +234,7 @@ These are NOT valid reasons for obsolescence.
 
 ### Commit Message Format
 
-From `config.yaml` → `automation.commit_message_format`:
+From `ai-flow-config.yaml` → `automation.commit_message_format`:
 
 ```
 feat({pbi_id}): {task_title}

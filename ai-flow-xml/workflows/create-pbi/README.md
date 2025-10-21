@@ -96,7 +96,7 @@ Load: workflows/create-pbi/workflow.yaml
 
 This workflow loads (~800 lines):
 - AGENTS.md - Primary directive
-- config.yaml - PBI states/transitions
+- ai-flow-config.yaml - PBI states/transitions
 - Section 2: PBI Management
 - backlog.md - Current PBIs
 - codebase-structure.md - For Legacy Discovery

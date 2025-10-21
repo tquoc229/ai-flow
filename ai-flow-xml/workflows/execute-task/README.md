@@ -99,7 +99,7 @@ Load: workflows/execute-task/workflow.yaml
 
 This workflow loads (~1500 lines):
 - AGENTS.md - Primary directive
-- config.yaml - Configuration
+- ai-flow-config.yaml - Configuration
 - Section 3: Task Management
 - Section 4: Testing Strategy
 - Task file

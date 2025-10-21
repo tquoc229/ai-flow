@@ -102,7 +102,7 @@ Each task must have:
 
 This workflow loads (~1000 lines):
 - AGENTS.md - Primary directive
-- config.yaml - Task structure rules
+- ai-flow-config.yaml - Task structure rules
 - Section 3: Task Management
 - backlog.md - Verify PBI status
 - {pbi_id}/prd.md - Implementation Plan to decompose

@@ -112,7 +112,7 @@ date: system-generated
 ```yaml
 recommended_inputs:
   - AGENTS.md
-  - config.yaml
+  - ai-flow-config.yaml
   - Section X (specific to workflow)
   - Context files
 ```
@@ -147,7 +147,7 @@ recommended_inputs:
 
 ## Configuration
 
-Workflows are registered in `config.yaml`:
+Workflows are registered in `ai-flow-config.yaml`:
 
 ```yaml
 workflows:
@@ -158,7 +158,7 @@ workflows:
 
 ## Standard Config Block
 
-All workflows share these variables from `config.yaml`:
+All workflows share these variables from `ai-flow-config.yaml`:
 
 ```yaml
 user_name: "User"
@@ -189,7 +189,7 @@ description: "..."
 version: "2.0"
 
 # Standard config block
-config_source: "{project-root}/config.yaml"
+config_source: "{project-root}/ai-flow-config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -217,7 +217,7 @@ template: false
 
 4. **Create README.md** (document the workflow)
 
-5. **Register in config.yaml:**
+5. **Register in ai-flow-config.yaml:**
 ```yaml
 workflows:
   new_workflow: "{workflows_root}/new-workflow/workflow.yaml"
@@ -256,7 +256,7 @@ workflows:
 ## Related Documentation
 
 - **[AGENTS.md](../AGENTS.md)** - Primary AI agent directive
-- **[config.yaml](../config.yaml)** - Central configuration
+- **[ai-flow-config.yaml](../ai-flow-config.yaml)** - Central configuration
 - **[docs/rules/](../docs/rules/)** - Policy sections
 
 ## Version

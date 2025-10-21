@@ -1,6 +1,6 @@
 # Execute Task - Workflow Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/config.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/ai-flow-config.yaml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/workflows/execute-task.yaml</critical>
 <critical>Communicate in {communication_language} throughout task execution</critical>
 <critical>Address user as {user_name} in greetings and summaries</critical>
@@ -47,7 +47,7 @@ Example: docs/delivery/14/14-1.md
 <action>Load the following files in order:</action>
 
 <action>1. Primary directive: {project-root}/AGENTS.md</action>
-<action>2. Configuration: {project-root}/config.yaml</action>
+<action>2. Configuration: {project-root}/ai-flow-config.yaml</action>
 <action>3. Policy index: {project-root}/docs/rules/project-policy-index.md</action>
 <action>4. Task management rules: {project-root}/docs/rules/sections/3-task-management.md</action>
 <action>5. Task file: {task_path}</action>

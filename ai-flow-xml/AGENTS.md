@@ -41,7 +41,7 @@
         1. **Load workflow.yaml** at specified path
            - Read complete configuration (name, description, author, version)
            - Extract standard config block:
-             * config_source: "{project-root}/config.yaml"
+             * config_source: "{project-root}/ai-flow-config.yaml"
              * output_folder: "{config_source}:output_folder"
              * user_name: "{config_source}:user_name"
              * communication_language: "{config_source}:communication_language"
@@ -220,7 +220,7 @@
   <item cmd="*help">Show this numbered menu</item>
 
   <item cmd="*reload-config" action="reload-config">
-    Reload config.yaml (if settings changed)
+    Reload ai-flow-config.yaml (if settings changed)
   </item>
 
   <item cmd="*exit">Exit agent with confirmation</item>
@@ -312,7 +312,7 @@
   <action name="reload-config">
     <description>Reload configuration file</description>
     <flow>
-      <step n="1">Load {project-root}/config.yaml</step>
+      <step n="1">Load {project-root}/ai-flow-config.yaml</step>
       <step n="2">Store all fields as session variables</step>
       <step n="3">Display updated settings to user</step>
       <step n="4">Confirm reload complete</step>
@@ -391,7 +391,7 @@ When this file is loaded (e.g., via `.claude/commands/myflow.md`):
 
 1. **Activation sequence runs automatically**
    - Loads persona
-   - Loads config.yaml
+   - Loads ai-flow-config.yaml
    - Loads policy index
    - Shows greeting and menu
 
@@ -426,7 +426,7 @@ Load AGENTS.md
 
 ## 🔗 Integration Points
 
-### With config.yaml:
+### With ai-flow-config.yaml:
 ```yaml
 # Agent reads these on startup
 user_name: "User"

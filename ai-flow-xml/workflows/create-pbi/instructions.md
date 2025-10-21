@@ -1,6 +1,6 @@
 # Create PBI - Workflow Instructions
 
-<critical>The workflow execution engine is governed by: {project-root}/config.yaml</critical>
+<critical>The workflow execution engine is governed by: {project-root}/ai-flow-config.yaml</critical>
 <critical>You MUST have already loaded and processed: {project-root}/workflows/create-pbi.yaml</critical>
 <critical>Follow PBI Management rules from: {project-root}/docs/rules/sections/2-pbi-management.md</critical>
 <critical>Communicate in {communication_language} throughout PBI creation</critical>

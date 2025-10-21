@@ -7,7 +7,7 @@ author: "MyFlow Team"
 # ========================================
 # STANDARD CONFIG BLOCK (BMAD-inspired)
 # ========================================
-config_source: "{project-root}/config.yaml"
+config_source: "{project-root}/ai-flow-config.yaml"
 output_folder: "{config_source}:output_folder"
 user_name: "{config_source}:user_name"
 communication_language: "{config_source}:communication_language"
@@ -42,7 +42,7 @@ recommended_inputs:
       purpose: "Primary directive"
       required: true
 
-    - path: "{project-root}/config.yaml"
+    - path: "{project-root}/ai-flow-config.yaml"
       purpose: "Task states and validation rules"
       required: true
 
